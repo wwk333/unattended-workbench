@@ -224,7 +224,29 @@ export const CHECKS = [
     }
   }),
 
-  // ⑦ 凭据（人做，脚本只查）
+  // ⑦ 看护计划任务：看护循环自己也会死，而"发现它死了"的角色就是它自己
+  //    ⇒ 只能靠系统级定时器兜底（每 5 分钟拉一次，已在跑就秒退）
+  item('supervisor', '看护计划任务（每 5 分钟兜底）', {
+    level: 'warn',
+    check: () => {
+      const r = spawnSync(process.execPath, [join(UN, '计划任务.mjs'), '--status'], { encoding: 'utf8', windowsHide: true, timeout: 60_000 })
+      let j = null
+      try { j = JSON.parse(String(r.stdout ?? '')) } catch {}
+      if (!j) return { ok: false, detail: '查不到（schtasks 不可用，或这台机器不是 Windows）' }
+      return j.exists
+        ? { ok: true, detail: `在册：${j.name}` }
+        : { ok: false, detail: '还没建（看板/看护死了没人拉起来）' }
+    },
+    hint: '看护循环自己也会死，而"发现它死了"的角色就是它自己 —— 只能靠系统级定时器兜底。不装也能手动跑，但就不叫"无人值守"了。',
+    fix: () => {
+      const r = spawnSync(process.execPath, [join(UN, '计划任务.mjs'), '--install'], { encoding: 'utf8', windowsHide: true, timeout: 120_000 })
+      if (r.status === 0) return true
+      const out = (String(r.stdout ?? '') + String(r.stderr ?? '')).trim().split('\n').slice(-2).join(' ')
+      return out || '建不上（可能被企业策略拦，见 KNOWN_ISSUES 第 8 条）'
+    }
+  }),
+
+  // ⑧ 凭据（人做，脚本只查）
   item('cred', 'API 钥匙（~/.dsh/.credentials.yaml）', {
     check: () => {
       const p = join(DSH_HOME ?? '', '.credentials.yaml')
