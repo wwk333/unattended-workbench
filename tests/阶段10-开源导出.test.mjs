@@ -211,3 +211,49 @@ test('空坑库 --topics 也不许炸', () => {
     assert.equal(r.status, 0, `exit=${r.status} stderr=${String(r.stderr).slice(0, 200)}`)
   } finally { rmSync(dir, { recursive: true, force: true }) }
 })
+
+// ---------------------------------------------------------------- 扫描器自检（★W7 用户发现的洞）
+//
+// 纪律（写进 CONTRIBUTING.md 第 8 条）：
+//   **新增任何一类敏感信息，先造一个样本喂给扫描器，确认它红了，再相信它。**
+//   "扫出来的命中是 0" 不等于 "干净" —— 也可能是根本没在看。
+//   这一组用例就是这条纪律的可执行版本：任何一个模式失明，这里先红。
+
+test('扫描器自检：每一类敏感信息都必须被抓到（抓不到 = 有洞，不是干净）', () => {
+  const dir = tmp()
+  try {
+    const J = (...a) => a.join('')      // 运行时拼，避免本文件自己命中自己
+    const CASES = [
+      ['私钥', 'secret', J('-----BEGIN ', 'RSA PRIVATE KEY-----')],
+      ['sk-', 'secret', J('sk-', 'abcdefghijklmnopqrstuvwx')],
+      ['ghp_', 'secret', J('ghp_', 'abcdefghijklmnopqrstuvwx')],
+      ['AKIA', 'secret', J('AKIA', 'ABCDEFGHIJKLMNOP')],
+      ['Bearer', 'secret', J('Bearer ', 'abcdefghijklmnopqrstuvwx')],
+      // 用户名路径
+      ['用户名路径', 'path', J('C:', '\\Users\\', 'zhangsan')],
+      // ⚠️ 这两条是 W7 漏掉的那一类：盘符 + **正斜杠**
+      ['盘符（反斜杠）', 'path', J('D:', '\\xiangmu')],
+      ['盘符（正斜杠）', 'path', J('D:', '/xiangmu')],
+      [J('Admin', 'istrator'), 'path', J('Admin', 'istrator')]   // 标签也要拼，否则本文件自己命中
+    ]
+    for (const [name, bucket, sample] of CASES) {
+      writeFileSync(join(dir, 'sample.mjs'), `const x = ${JSON.stringify(sample)}\n`, 'utf8')
+      const r = scanContent(dir, ['sample.mjs'])
+      const got = bucket === 'secret' ? r.secrets : r.paths
+      assert.ok(got.length > 0, `扫描器抓不到「${name}」—— 说明这一类有洞，不能再说"零命中"`)
+    }
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('扫描器自检：标准系统目录**不许**误报（否则会被逼着改常量）', () => {
+  const dir = tmp()
+  try {
+    const J = (...a) => a.join('')
+    const OK = [J('C:', '\\Windows\\System32'), J('C:', '\\Program Files\\nodejs'), J('X:', '/fixture')]
+    for (const s of OK) {
+      writeFileSync(join(dir, 'sample.mjs'), `const x = ${JSON.stringify(s)}\n`, 'utf8')
+      const r = scanContent(dir, ['sample.mjs'])
+      assert.equal(r.paths.length, 0, `误报了：${s}`)
+    }
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
