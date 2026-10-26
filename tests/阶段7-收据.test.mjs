@@ -13,7 +13,7 @@ import { compactionStats, compactionStatsOfText, COMPACTION_TYPES, USAGE_TYPES }
 import { openDb, migrate, startRun, startAttempt, finishAttempt, listAttempts, attemptDigest, DB_SCHEMA } from '../_unattended/_状态库.mjs'
 import { dump } from './_助手.mjs'
 
-const P = 'D:/无人值守/workspaces/_演练8'
+const P = 'X:/无人值守/workspaces/_演练8'
 let seq = 0
 const nid = (p) => `${p}-${++seq}`
 function freshDb () {

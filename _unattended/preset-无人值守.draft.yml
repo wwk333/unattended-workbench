@@ -35,7 +35,7 @@
           - id: persona
             name: '@deepseek-ai/dsh-persona'
             config:
-              prefix: !!js require('fs').readFileSync('D:/无人值守/_unattended/roles/brain.md', 'utf8')
+              prefix: !!js require('fs').readFileSync('<工作台根>/_unattended/roles/brain.md', 'utf8')
               # ⚠️ 2026-10-19 b184：**这里不许再写 `Your working directory is {{cwd}}.`**
               #    0.2.1 起宿主只注册 provider / model，`{{cwd}}` 会让**提示词组装直接抛错**
               #    （unknown prompt variable …），会话在发出任何模型请求之前就失败
@@ -86,7 +86,7 @@
             name: '@deepseek-ai/dsh-skill-filesystem'
             config:
               customSkillDirs:
-                - 'D:/obsidian/知识库/AI知识库/人机协作SOP-唯一源/skills'
+                - '<工作台根>/skills'
           - id: tool-skill
             name: '@deepseek-ai/dsh-tool-skill'
           - id: present

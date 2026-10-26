@@ -204,7 +204,7 @@ test('③ 越界名单要覆盖"重跑门禁"（原来只认 npm test，门禁.m
 // ---- 行为：卡上的规矩会不会真响（这是"长牙"的本体，光有静态断言不算） ----
 
 test('③ 回执里跑了 `门禁.mjs` ⇒ review-rerun-gate（真跑踩到的那个漏网）', () => {
-  const r = reviewPolicyOf({ body: '跑过的命令：\n1. node "D:/无人值守/_unattended/门禁.mjs" --project "D:/x"\n2. cat gate-result.json', toolCalls: 5 })
+  const r = reviewPolicyOf({ body: '跑过的命令：\n1. node "<工作台根>/_unattended/门禁.mjs" --project "X:/x"\n2. cat gate-result.json', toolCalls: 5 })
   assert.equal(r.policy, 'review-rerun-gate')
 })
 

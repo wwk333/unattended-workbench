@@ -65,7 +65,7 @@ test('多种形状混在一份流里，各算各的、不互相吞', () => {
 })
 
 // ---- 真样本核账（文件不在盘上就跳过：测试不依赖外部项目）----
-const REAL = 'D:/xiangmu/beidanci/_crew/runs/2026-10-26T17-25-29/review/REVIEW-2026-10-26T17-25-29.out.json'
+const REAL = 'X:/xiangmu/beidanci/_crew/runs/2026-10-26T17-25-29/review/REVIEW-2026-10-26T17-25-29.out.json'
 test('真样本：这次审核的工具事件数必须等于账本的 67', { skip: !existsSync(REAL) ? '真样本不在盘上' : false }, () => {
   const n = countToolEvents(readFileSync(REAL, 'utf8'))
   assert.equal(n, 67, `数出来 ${n}，账本记的是 67 —— 对不上就说明判据又漂了`)

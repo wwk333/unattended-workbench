@@ -13,7 +13,7 @@ import { dump } from './_助手.mjs'
 const win = (re) => (p) => re.test(String(p))
 
 test('没有 server/* 的项目 ⇒ 空数组（调用方跳过，不是失败）', () => {
-  const r = reviewBackupScope({ project: 'D:/x/demo', files: ['hello.txt'], exists: () => false })
+  const r = reviewBackupScope({ project: 'X:/x/demo', files: ['hello.txt'], exists: () => false })
   assert.deepEqual(r, [])
   dump('scope-empty', r)
 })

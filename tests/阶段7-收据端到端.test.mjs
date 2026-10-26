@@ -17,7 +17,7 @@ import { finishAttemptOn } from '../_unattended/_派活内核.mjs'
 import { openDb, listAttempts } from '../_unattended/_状态库.mjs'
 import { dump } from './_助手.mjs'
 
-const PROJECT = 'D:/无人值守/workspaces/_演练8'
+const PROJECT = 'X:/无人值守/workspaces/_演练8'
 
 test('事件流经 finishAttemptOn 一路写进库（四环不掉字段）', async () => {
   const svc = await startService()

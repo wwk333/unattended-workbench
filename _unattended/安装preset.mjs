@@ -27,20 +27,22 @@ import { execFileSync, spawnSync } from 'node:child_process'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { homedir } from 'node:os'
-import { CLI_JS as CLI_JS_P, DSH_EXE as DSH_EXE_P, NODE_BIN, need } from './_路径.mjs'
+import { CLI_JS as CLI_JS_P, DSH_EXE as DSH_EXE_P, DSH_HOME, DSH_ROOT, NODE_BIN, need } from './_路径.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const NODE = process.env.DSH_NODE_EXE ?? need('专用 node（DSH 自带）', NODE_BIN)
 const ELECTRON = process.env.DSH_ELECTRON_EXE ?? need('DSH 主程序', DSH_EXE_P)
 const CLI_JS = process.env.DSH_CLI_JS ?? need('DSH headless 入口', CLI_JS_P)
-const SHIPPED_STANDARD = 'D:/dsh桌面端/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh-web-app/presets/standard.patch.yml'
-const DSH_HOME = process.env.DSH_HOME ?? join(homedir(), '.dsh')
+const SHIPPED_STANDARD = join(DSH_ROOT, 'resources', 'app.asar', 'dsh', 'node_modules', '@deepseek-ai', 'dsh-web-app', 'presets', 'standard.patch.yml')
+// ★W7：DSH_HOME 统一从 `_路径.mjs` 取（它认环境变量、认 config\本机映射.json），本文件不再自己猜
 const PROFILE_DIR = join(DSH_HOME, 'profiles', 'desktop')
 const PATCH_FILE = join(PROFILE_DIR, 'cordis.patch.yml')
 const BACKUP_ROOT = join(HERE, 'backup')
 const LOG_DIR = join(HERE, 'logs')
 const ROLES_FILE = join(HERE, 'roles', 'brain.md')
-const SKILLS_DIR = 'D:/obsidian/知识库/AI知识库/人机协作SOP-唯一源/skills'
+// ★W7：技能**随包发**（包内 `skills\` 是模板），由 `_安装技能.mjs` 渲染到 `~/.dsh/skills`。
+//   customSkillDirs 必须指向**渲染后**那份 —— 指模板会让大脑读到 `{{项目根}}` 这种占位符。
+const SKILLS_DIR = DSH_HOME ? join(DSH_HOME, 'skills') : ''
 
 const argv = process.argv.slice(2)
 const APPLY = argv.includes('--apply')

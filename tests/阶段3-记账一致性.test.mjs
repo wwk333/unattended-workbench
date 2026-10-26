@@ -17,7 +17,7 @@ import { startAttemptOn, finishAttemptOn } from '../_unattended/_派活内核.mj
 import { beginAttempt, endAttempt } from '../_unattended/_收据回写.mjs'
 import { dump } from './_助手.mjs'
 
-const P = 'D:/fixture/d11-conform'
+const P = 'X:/fixture/d11-conform'
 
 test('内核通道 vs 收据回写通道：落库字段集合一致、状态语义一致', async () => {
   const svc = await startService()

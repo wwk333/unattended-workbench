@@ -13,7 +13,7 @@ import { recordAttempt, eventsOfOut } from '../_unattended/_收据回写.mjs'
 import { openDb, listAttempts, listRuns } from '../_unattended/_状态库.mjs'
 import { dump } from './_助手.mjs'
 
-const P = 'D:/无人值守/workspaces/_演练8'
+const P = 'X:/无人值守/workspaces/_演练8'
 
 function scratch () {
   const dir = mkdtempSync(join(tmpdir(), 'crew-receipt-'))

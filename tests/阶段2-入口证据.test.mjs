@@ -164,7 +164,7 @@ test('resolveEvidencePath：相对项目根，绝对路径原样', () => {
   const dir = fixture({ 'x/y.json': '{}' })
   try {
     assert.ok(resolveEvidencePath(dir, 'x/y.json').includes('x'))
-    assert.equal(resolveEvidencePath(dir, 'C:/abs/z.json'), 'C:/abs/z.json')
+    assert.equal(resolveEvidencePath(dir, 'X:/abs/z.json'), 'X:/abs/z.json')
     assert.equal(resolveEvidencePath(dir, null), null)
   } finally { cleanup(dir) }
 })

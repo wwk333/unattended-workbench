@@ -20,7 +20,7 @@ import { dump } from './_助手.mjs'
 
 const NODE = process.execPath
 const DISPATCH = join(UNATTENDED, '派活.mjs')
-// ★W2：**不再写死 `D:/无人值守/workspaces/...`** —— 从工作台根算，包里也能跑
+// ★W2：**不再写死工作台的绝对路径** —— 从工作台根算，包里也能跑
 const PROJECT = join(WORKSPACE, 'workspaces', '_演练8').replace(/\\/g, '/')
 const OUT = join(tmpdir(), 'crew-d11-tasks')
 

@@ -126,7 +126,7 @@ test('自愈账本：一行一次尝试，可回读', () => {
 
 test('计划任务：名字、命令、参数都对（每 5 分钟、隐藏、已存在就覆盖）', () => {
   assert.equal(TASK_NAME, 'DSH-Crew-Supervisor')
-  const args = buildCreateArgs({ node: 'NODE', ensureScript: 'D:/w/确保看守.mjs' })
+  const args = buildCreateArgs({ node: 'NODE', ensureScript: 'X:/w/确保看守.mjs' })
   assert.deepEqual(args.slice(0, 2), ['/Create', '/TN'])
   assert.equal(args[2], TASK_NAME)
   assert.equal(args[3], '/TR')

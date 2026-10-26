@@ -52,7 +52,7 @@ export function reviewBackupScope ({ project, files = [], conventional = CONVENT
  *
  * 该挡的不是"文件"，是"整盘 / 整树"：
  *   ① 空串 / `.` / `..`
- *   ② 盘符开头（`c:` / `c:/` / `c:/xxx`）—— 只挡 `c:` 是挡不住的，必须按前缀判
+ *   ② 盘符开头（`c:` 后面接不接斜杠都算）—— 只挡 `c:` 本身是挡不住的，必须按前缀判
  *   ③ 绝对路径（`/xxx`）
  *
  * @param {string[]} dirs `reviewBackupScope` 的返回（目录或根层文件名）
@@ -67,7 +67,7 @@ export function backupTargets (dirs) {
     if (!s) continue
     // ⚠️ 必须在 `norm()` **之前**判绝对路径：`norm` 会把开头的 `/` 当"前导分隔符"剥掉，
     //   于是 `/etc/passwd` 会被洗成看起来正常的 `etc/passwd`（单测当场抓到的）。
-    if (/^[a-z]:/i.test(s)) continue                      // 盘符：c: / c:/ / c:/xxx
+    if (/^[a-z]:/i.test(s)) continue                      // 盘符：字母+冒号，后面接不接斜杠都算
     if (s.startsWith('/') || s.startsWith('\\')) continue // 绝对路径 / UNC
     const d = norm(s)
     if (!d || d === '.' || d === '..') continue

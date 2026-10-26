@@ -102,7 +102,7 @@ const PH = loadPlaceholders()
 
 // 相对路径的候选根（按"文档里最可能指哪"排序）
 const ROOTS = [
-  HOME, UNATTENDED, DOCS, join(HOME, '_crew'), 'D:/obsidian/知识库/AI知识库/人机协作SOP-唯一源',
+  HOME, UNATTENDED, DOCS, join(HOME, '_crew'), ...(KB ? [join(KB, '人机协作SOP-唯一源')] : []),
   join(UNATTENDED, 'sidebar-plugin', 'lib'), DSH_HOME, DSH_ROOT, KB, join(KB, '坑')
 ]
 

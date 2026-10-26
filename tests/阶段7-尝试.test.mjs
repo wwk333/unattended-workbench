@@ -14,7 +14,7 @@ import { UNATTENDED } from './_服务夹具.mjs'
 import { dump } from './_助手.mjs'
 
 const PANEL = join(UNATTENDED, '面板')
-const P = 'D:/无人值守/workspaces/_演练8'
+const P = 'X:/无人值守/workspaces/_演练8'
 let seq = 0
 const nid = (p) => `${p}-${++seq}`
 

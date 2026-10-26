@@ -28,7 +28,7 @@ import { randomBytes } from 'node:crypto'
 
 import {
   WORKSPACE, CONFIG_DIR, MAP_FILE, MAP, MAP_SOURCE, loadMap,
-  AGENTS, DSH_ROOT, NODE_BIN, DSH_EXE, DSH_HOME, VAULT, KB, BACKUP_ROOT, HOME_DIR
+  AGENTS, DSH_ROOT, NODE_BIN, DSH_EXE, DSH_HOME, VAULT, KB, BACKUP_ROOT, HOME_DIR, PROJECTS_ROOT
 } from './_unattended/_路径.mjs'
 import { expand, loadConfig, maskSecrets } from './_unattended/_agents-config.mjs'
 
@@ -204,7 +204,27 @@ export const CHECKS = [
     }
   }),
 
-  // ⑥ 凭据（人做，脚本只查）
+  // ⑥ 技能（策划 / 项目解剖）：包里是**模板**，装到 ~/.dsh/skills 之前渲染一次
+  item('skills', '技能（策划 / 项目解剖）已装到 ~/.dsh/skills', {
+    check: () => {
+      const dest = DSH_HOME ? join(DSH_HOME, 'skills') : null
+      if (!dest) return { ok: false, detail: 'DSH 家目录没解析出来（先装 DSH 并登录一次）' }
+      const need = ['idea-to-plan', 'project-anatomy']
+      const missing = need.filter(n => !existsSync(join(dest, n, 'SKILL.md')))
+      return missing.length
+        ? { ok: false, detail: `缺 ${missing.join('、')}（共 ${dest}）` }
+        : { ok: true, detail: dest }
+    },
+    hint: '不装技能，大脑就没有「帮我把想法写成策划方案」的能力 —— 这是产品的入口功能之一。',
+    fix: () => {
+      const r = spawnSync(process.execPath, [join(UN, '_安装技能.mjs')], { encoding: 'utf8', windowsHide: true })
+      const out = String(r.stdout ?? '') + String(r.stderr ?? '')
+      if (r.status === 0) return true
+      return out.trim().split('\n').slice(-2).join(' ') || `安装失败（exit ${r.status}）`
+    }
+  }),
+
+  // ⑦ 凭据（人做，脚本只查）
   item('cred', 'API 钥匙（~/.dsh/.credentials.yaml）', {
     check: () => {
       const p = join(DSH_HOME ?? '', '.credentials.yaml')
@@ -238,7 +258,8 @@ function detect () {
     '坑库': VAULT ?? '',
     '知识库': KB ?? '',
     '备份根': BACKUP_ROOT ?? '',
-    '项目根': ''
+    // 默认放 用户目录\xiangmu：策划技能要在这里建项目文件夹，留空会让它照着占位符建
+    '项目根': PROJECTS_ROOT ?? (HOME_DIR ? join(HOME_DIR, 'xiangmu') : '')
   }
   return guess
 }

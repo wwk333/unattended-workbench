@@ -24,7 +24,17 @@ const path = require('node:path');
 const zlib = require('node:zlib');
 const crypto = require('node:crypto');
 
-const ASAR = 'D:/dsh桌面端/resources/app.asar/dsh/node_modules/@deepseek-ai';
+// ★W7：DSH 根不再写死（各人装在不同的盘）—— 取 config\本机映射.json 的「DSH根」
+const _dshRoot = (() => {
+  try {
+    const m = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config', '本机映射.json'), 'utf8'));
+    const v = m && m['DSH根'];
+    if (typeof v === 'string' && v && !v.startsWith('<')) return v;
+  } catch {}
+  return process.env.DSH_APP_ROOT || '';
+})();
+if (!_dshRoot) { console.error('❌ 不知道 DSH 装在哪：填 config\\本机映射.json 的「DSH根」（或设 DSH_APP_ROOT）'); process.exit(2); }
+const ASAR = path.join(_dshRoot, 'resources', 'app.asar', 'dsh', 'node_modules', '@deepseek-ai');
 const MAGIC = Buffer.from([0x28, 0xb5, 0x2f, 0xfd]);
 const NOT_STARTED_TEXT = 'The tool call was interrupted before the Harness recorded it as started. Retry it if it is still needed.';
 const OK = (s) => console.log('  ' + s);

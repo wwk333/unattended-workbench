@@ -72,6 +72,7 @@ export const ALLOW = Object.freeze([
   // 根：用户唯一要读的东西 + 合规件（★W1：这些以前根本没写进清单，缺了也不报）
   'README.md',
   '开始.md',
+  'skills/idea-to-plan/SKILL.md',
   'LICENSE',
   'SECURITY.md',
   'THIRD-PARTY.md',
@@ -85,6 +86,12 @@ export const ALLOW = Object.freeze([
   'uninstall.mjs',
   'uninstall.mjs',
   'gate.json',
+  // 技能（策划 / 项目解剖）：包里是**模板**，安装时由 `_安装技能.mjs` 渲染到 ~/.dsh/skills
+  'skills/**/*.md',
+  'skills/**/*.mjs',
+  'skills/**/*.cmd',
+  'skills/**/*.html',
+  'skills/**/*.json',
   // 用户文档
   'docs/**/*.md',
   // 配置示例（真配置永不进包）
@@ -170,7 +177,10 @@ export const PATH_PATTERNS = Object.freeze([
   ['本机用户名', new RegExp('\\b' + 'Admin' + 'istrator' + '\\b')],
   // ⚠️ 反斜杠要写成 `\\{1,2}`（两个）：代码里的路径是转义形式，只按一个扫会漏一半。
   //    只写 `\\` 会漏掉一半 —— 我第一版就漏了，扫出来 10 处，实际 20 处。
-  ['盘符路径', /\b[A-Za-z]:\\{1,2}[A-Za-z0-9_\u4e00-\u9fa5]/]
+  // ★W7（用户发现的）：上一版只认反斜杠，**正斜杠的盘符路径全漏了**。
+  //    实测漏了 8 处真路径（知识库目录、DSH 安装目录）已经推到 GitHub 上。
+  //    Windows 上两种斜杠都合法，扫描必须都认。
+  ['盘符路径', /\b[A-Za-z]:[\\/]{1,2}[A-Za-z0-9_\u4e00-\u9fa5]/]
 ])
 
 /**
@@ -179,7 +189,9 @@ export const PATH_PATTERNS = Object.freeze([
  */
 export const HARMLESS_PATH = Object.freeze([
   // `\\{1,2}`：源码里写的是"系统目录 + 两个反斜杠"的转义形式，只认一个会漏一半
-  /^[A-Za-z]:\\{1,2}(?:Program Files(?: \(x86\))?|Windows|ProgramData)\b/i
+  /^[A-Za-z]:[\\/]{1,2}(?:Program Files(?: \(x86\))?|Windows|ProgramData)\b/i,
+  // `X:` 是"不存在的盘"，测试夹具的通用写法（业界惯例）⇒ 它不可能指向任何人的机器
+  /^X:[\\/]/
 ])
 
 const globToRe = (g) => {

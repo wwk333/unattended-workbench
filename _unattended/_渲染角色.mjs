@@ -41,7 +41,7 @@ export function tokens () {
 }
 
 export function renderText (text, tk = tokens()) {
-  return String(text).replace(/\{\{\s*([A-Za-z\u4e00-\u9fa5]+)\s*\}\}/g, (all, key) =>
+  return String(text).replace(/\{\{\s*([A-Za-z0-9_\u4e00-\u9fa5]+)\s*\}\}/g, (all, key) =>
     Object.hasOwn(tk, key) ? tk[key] : all)
 }
 
