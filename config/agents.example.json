@@ -62,57 +62,6 @@
       "timeoutMin注": "已废弃（2026-10-09 八·S1）—— 全项目零消费点（死字段）；真值＝编排.mjs --timeout-min（默认 90 分钟）／coder-b-dsh.mjs 20／台账.mjs 10。不要再加回消费点。",
       "notes": "⚠️ 必须 --standalone：否则连本机常驻服务、key 传不进去（实测 401）。无 --dir 参数，工作目录靠子进程 cwd。模型写法 'provider/model'。★2026-10-04 timeoutMin 20→45（与 pi 同因：大任务 20 分钟不够）。"
     },
-    "codex": {
-      "说明": "Codex CLI：自带 exec review + 系统级只读沙箱；配置走包内 ${AGENTS}\\config\\codex，不碰桌面应用那套 ~/.codex。",
-      "kind": "generic",
-      "node": "${NODE}",
-      "entry": "${AGENTS}\\node_modules\\@openai\\codex\\bin\\codex.js",
-      "printArgs": [
-        "exec",
-        "--skip-git-repo-check"
-      ],
-      "modelFlag": "-m",
-      "dirFlag": "-C",
-      "effortArgs": [
-        "-c",
-        "model_reasoning_effort=${EFFORT}"
-      ],
-      "续跑注": "★ 2026-10-10（T3）：Codex 的续跑是**子命令**（`codex exec resume <id>` / `--last`、`codex exec fork`），不是「旗标＋值」⇒ 现有 sessionFlag 机制表达不了，故**不声明 sessionFlag**（未进编制，要用时再单独接线）。",
-      "env": {
-        "CODEX_HOME": "${AGENTS}\\config\\codex",
-        "ARK_API_KEY": "${CRED:ARK_API_KEY}"
-      },
-      "envClear": [
-        "CI"
-      ],
-      "timeoutMin": 20,
-      "timeoutMin注": "已废弃（2026-10-09 八·S1）—— 全项目零消费点（死字段）；真值＝编排.mjs --timeout-min（默认 90 分钟）／coder-b-dsh.mjs 20／台账.mjs 10。不要再加回消费点。",
-      "notes": "必加 --skip-git-repo-check（否则 Not inside a trusted directory）+ -C <目录>。档位要写成 -c model_reasoning_effort=<档位>。⚠️ 只能走火山的 Responses 口（0.155 起不再支持 wire_api=chat）→ 阿里那条口接不上。异步 IPC 在外层沙箱里会失败，需普通终端。"
-    },
-    "qoder": {
-      "说明": "Qoder CN CLI（急救用）：它自己的登录态与加密配置在 ~/.qoder-cn（不能进包，各人自己配）。",
-      "kind": "qoder",
-      "node": "${NODE}",
-      "entry": "${AGENTS}\\node_modules\\@qodercn-ai\\qoderclicn\\bundle\\qoderclicn.js",
-      "printArgs": [
-        "-p",
-        "-o",
-        "json"
-      ],
-      "modelFlag": "-m",
-      "effortFlag": "--reasoning-effort",
-      "allowToolsFlag": "--allowed-tools",
-      "denyToolsFlag": "--disallowed-tools",
-      "worktreeFlag": "--worktree",
-      "dirFlag": "-w",
-      "permissionMode": "auto",
-      "envClear": [
-        "CI"
-      ],
-      "timeoutMin": 20,
-      "timeoutMin注": "已废弃（2026-10-09 八·S1）—— 全项目零消费点（死字段）；真值＝编排.mjs --timeout-min（默认 90 分钟）／coder-b-dsh.mjs 20／台账.mjs 10。不要再加回消费点。",
-      "notes": "⚠️ 输出必须重定向到文件、绝不接管道（实测接管道 exit 42、零输出）。自定义模型按 modelID 选。"
-    },
     "qwencode": {
       "说明": "Qwen Code 0.25.0（rescue 位，2026-10-09 替换 Qoder）：headless 走 --output-format json + --yolo（auto 档 fail-closed 会退化成等人批）。端点走 OPENAI_BASE_URL 钉死火山 ark，模型写裸名。",
       "kind": "generic",

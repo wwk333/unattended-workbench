@@ -125,14 +125,6 @@ export const FALLBACK = {
       sessionFlag: null,          // ★ 2026-10-10 T3：这家**没有续跑口**（一次性 spawnSync）—— 如实声明 null，别拼假命令
       envClear: []
     },
-    codex: {
-      kind: 'generic', node: '${NODE}', entry: '${AGENTS}\\node_modules\\@openai\\codex\\bin\\codex.js',
-      printArgs: ['exec', '--skip-git-repo-check'],
-      modelFlag: '-m', dirFlag: '-C',
-      effortArgs: ['-c', 'model_reasoning_effort=${EFFORT}'],
-      env: { CODEX_HOME: '${AGENTS}\\config\\codex', ARK_API_KEY: '${CRED:ARK_API_KEY}' },
-      envClear: ['CI']
-    },
     opencode: {
       kind: 'generic', entry: '${AGENTS}\\opencode\\opencode.exe',
       printArgs: ['run', '--standalone', '--format', 'json', '--auto', '--thinking'],   // ★ 2026-10-10：+`--thinking`（否则只有思考 token 数、没有正文）
@@ -146,12 +138,6 @@ export const FALLBACK = {
       modelFlag: '--model', effortFlag: '--thinking', sessionFlag: '--session',           // ★ 续跑＝`--session`（找不到会响亮报错，不是 `--session-id` 的"悄悄新建"）
       env: { QWEN_TOKEN_PLAN_CN_API_KEY: '${CRED:QWEN_TOKEN_PLAN_CN_API_KEY}', XIAOMI_API_KEY: '${CRED:XIAOMI_API_KEY}' },
       envClear: ['CI']
-    },
-    qoder: {
-      kind: 'qoder', node: '${NODE}', entry: '${AGENTS}\\node_modules\\@qodercn-ai\\qoderclicn\\bundle\\qoderclicn.js',
-      printArgs: ['-p', '-o', 'json'], modelFlag: '-m', effortFlag: '--reasoning-effort',
-      allowToolsFlag: '--allowed-tools', denyToolsFlag: '--disallowed-tools',
-      worktreeFlag: '--worktree', dirFlag: '-w', permissionMode: 'auto', envClear: ['CI']
     },
     qwencode: {
       kind: 'generic', node: '${NODE}', entry: '${AGENTS}\\node_modules\\@qwen-code\\qwen-code\\cli-entry.js',
