@@ -77,6 +77,9 @@ export const ALLOW = Object.freeze([
   'THIRD-PARTY.md',
   'CHANGELOG.md',
   'KNOWN_ISSUES.md',
+  'CONTRIBUTING.md',
+  // ★W7：GitHub 的 issue 模板（放在 .github\ 下，不在 docs 里）
+  '.github/**/*.yml',
   'setup.mjs',
   'doctor.mjs',
   'uninstall.mjs',

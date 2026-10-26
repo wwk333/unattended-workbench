@@ -1,5 +1,11 @@
 # 无人值守 · 多 agent 协同工作台
 
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows-0078D6.svg)](#)
+[![Release](https://img.shields.io/github/v/release/wwk333/unattended-workbench?label=release)](https://github.com/wwk333/unattended-workbench/releases)
+[![Node](https://img.shields.io/badge/node-24.x-339933.svg)](https://nodejs.org)
+[![Tests](https://img.shields.io/badge/tests-458%20passing-2ea44f.svg)](#)
+
 > 一个人 + 一群 AI，把活干完并且**能被机器验收**。
 > 你出需求，大脑拆活派给几个"班组"AI 去写，写完全量测试 + 独立审核，红了自动打回重修，绿了才交给你。
 

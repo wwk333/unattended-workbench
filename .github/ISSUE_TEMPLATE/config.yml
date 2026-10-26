@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 它不是 bug，是"我不知道怎么用"
+    url: https://github.com/wwk333/unattended-workbench/blob/main/docs/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.md
+    about: 先看《快速开始》，20 分钟从解压到看到第一份策划方案
+  - name: 安全问题
+    url: https://github.com/wwk333/unattended-workbench/blob/main/SECURITY.md
+    about: 发现漏洞**不要**开公开 issue，按 SECURITY.md 里说的做

@@ -1,0 +1,78 @@
+name: 出问题了
+description: 装不上 / 跑不通 / 结果不对
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        先跑 `node doctor.mjs --json`，把输出贴到下面第 3 项。
+        **不要贴 `.credentials.yaml`，不要贴任何密钥。**
+
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么
+      description: 你做了什么、期望什么、实际什么
+      placeholder: |
+        例：解压胖包后跑 node setup.mjs --apply，报「缺『DSH 安装根』」，
+        但 DSH 我装在另一个盘的一个目录里。期望它自己找到。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 解压到某个目录
+        2. node setup.mjs --apply
+        3. 报错
+    validations:
+      required: true
+
+  - type: textarea
+    id: doctor
+    attributes:
+      label: doctor 输出
+      description: 跑 `node doctor.mjs --json`，把 JSON 贴进来（它会给钥匙打码，但仍请自己扫一眼）
+      render: json
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: 你下载的是瘦包还是胖包？文件名是什么？
+      placeholder: wuyunshou-v0.1.0-offline.zip
+    validations:
+      required: true
+
+  - type: input
+    id: node
+    attributes:
+      label: node 版本
+      description: 跑 `node --version`
+      placeholder: v24.19.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: admin
+    attributes:
+      label: 是不是管理员账户
+      options:
+        - 是
+        - 不是
+        - 不知道
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 确认
+      options:
+        - label: 我贴的内容里**没有**密钥、没有个人路径
+          required: true
