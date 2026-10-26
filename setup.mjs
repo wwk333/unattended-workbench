@@ -246,7 +246,25 @@ export const CHECKS = [
     }
   }),
 
-  // ⑧ 凭据（人做，脚本只查）
+  // ⑧ Obsidian（可选）：装了 dsh-obsidian 插件就顺手打一道路径护栏
+  //    没装插件时**不是错**，本项显示为"可选未做"，不拦起飞
+  item('obsidian', 'Obsidian 插件护栏（可选）', {
+    level: 'warn',
+    check: () => {
+      const r = spawnSync(process.execPath, [join(UN, '打obsidian路径护栏.mjs'), '--check'], { encoding: 'utf8', windowsHide: true, timeout: 60_000 })
+      const out = String(r.stdout ?? '') + String(r.stderr ?? '')
+      if (/跳过|没装/.test(out)) return { ok: false, detail: '没装 dsh-obsidian 插件（可选：装了才能在会话里读写笔记）' }
+      if (r.status === 0) return { ok: true, detail: '护栏已打' }
+      return { ok: false, detail: '装了插件，但护栏没打（路径可能越出 vault）' }
+    },
+    hint: '在 Obsidian 里看项目文档是**可选**的：不装也能用，项目文件夹本身就能打开。',
+    fix: () => {
+      const r = spawnSync(process.execPath, [join(UN, '打obsidian路径护栏.mjs')], { encoding: 'utf8', windowsHide: true, timeout: 60_000 })
+      return r.status === 0 ? true : '打不上（看它自己的输出）'
+    }
+  }),
+
+  // ⑨ 凭据（人做，脚本只查）
   item('cred', 'API 钥匙（~/.dsh/.credentials.yaml）', {
     check: () => {
       const p = join(DSH_HOME ?? '', '.credentials.yaml')
