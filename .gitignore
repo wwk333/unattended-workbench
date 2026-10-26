@@ -1,0 +1,73 @@
+# ⚠️ 这份 .gitignore 是**安全底线**，不是整理癖 —— 加进来就别删。
+#
+# 为什么单独写一份：本仓库只放**源码 + 文档**。
+# 一旦有人 `git add .` 手滑，下面这些东西会直接进第一个 commit：
+#   ① 真配置 `config\*.json`（含本机绝对路径）
+#   ② 运行时数据 `_crew\`（台账/门禁/账本，含真实项目名与路径）
+#   ③ 载体 CLI `agents\`（700 MB，且是第三方的东西，不该进我们的仓库）
+#   ④ 发布物 `*.zip`（258 MB，放 Release，不放仓库）
+
+# ── 一、配置与凭据（最高优先级：这几条在任何情况下都不许放开）
+config/*
+!config/*.example.json
+!config/*.example.txt
+secrets/
+.env
+.env.*
+!env.example
+swap-token.txt
+*.key
+*.pem
+*credentials*.yaml
+unattended-keys.json
+
+# ── 二、运行时数据（每天都在变，进库只会制造无意义的 diff）
+_crew/
+坑库/
+dist/
+logs/
+runs/
+backup/
+*.db
+*.db-wal
+*.db-shm
+*.log
+*.jsonl
+export-manifest.json
+
+# ── 三、载体 CLI（第三方、几百 MB、许可各不相同）
+agents/
+node_modules/
+
+# ── 四、发布物
+*.zip
+*.7z
+*.tar.gz
+SHA256SUMS.txt
+
+# ── 五、角色规矩的**渲染稿**（由 `node _unattended\_渲染角色.mjs` 生成；随包发的是 *.template.md）
+_unattended/roles/brain.md
+_unattended/roles/班组须知.md
+_unattended/roles/班组须知-细则.md
+
+# ── 六、手工备份（本项目历史遗留的命名法）
+*.bak
+*.bak-*
+*.bak.*
+*.orig
+*.orig-*
+*.pre-rollback-*
+*.before-*
+
+# ── 七、编辑器 / 系统
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+*.lnk
+~$*
+
+# ── 八、临时文件
+*.tmp
+*.tmp.*
+*.crdownload

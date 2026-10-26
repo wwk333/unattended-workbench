@@ -1,0 +1,5 @@
+# 班组换会话桥（仅 host 半）—— 本组合包的 patch
+# 形状照抄现役的 sidebar-plugin\cordis.patch.yml：一个 insert，一条行。
+- insert:
+    - id: crew-bridge
+      name: dsh-crew-bridge

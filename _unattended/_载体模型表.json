@@ -1,0 +1,141 @@
+{
+  "qoder": {
+    "at": "2026-10-26T18:54:28.215Z",
+    "models": [
+      {
+        "label": "Auto",
+        "value": "Auto",
+        "custom": false
+      },
+      {
+        "label": "Qwen3.8-Max",
+        "value": "Qwen3.8-Max",
+        "custom": false
+      },
+      {
+        "label": "Qwen3.8-Flash",
+        "value": "Qwen3.8-Flash",
+        "custom": false
+      },
+      {
+        "label": "DeepSeek-V4-Pro",
+        "value": "DeepSeek-V4-Pro",
+        "custom": false
+      },
+      {
+        "label": "DeepSeek-Flash",
+        "value": "DeepSeek-Flash",
+        "custom": false
+      },
+      {
+        "label": "GLM-5.3",
+        "value": "GLM-5.3",
+        "custom": false
+      },
+      {
+        "label": "GLM-5.3-Flash",
+        "value": "GLM-5.3-Flash",
+        "custom": false
+      },
+      {
+        "label": "Kimi-K3.1-Pro",
+        "value": "Kimi-K3.1-Pro",
+        "custom": false
+      },
+      {
+        "label": "Kimi-K2.8-Preview",
+        "value": "Kimi-K2.8-Preview",
+        "custom": false
+      },
+      {
+        "label": "MiniMax-M3.1-Flash",
+        "value": "MiniMax-M3.1-Flash",
+        "custom": false
+      },
+      {
+        "label": "Qwen-3.8-Flash",
+        "value": "dd79923d-191a-4625-94a6-5fac574e3720",
+        "custom": true
+      },
+      {
+        "label": "Qwen-3.8-Max",
+        "value": "435a264f-fb94-4f3b-8227-ae94743a392d",
+        "custom": true
+      },
+      {
+        "label": "Qwen-3.7-Max",
+        "value": "4218d059-d777-4f54-bfcc-a25d25de242f",
+        "custom": true
+      },
+      {
+        "label": "Qwen-3.7-Plus",
+        "value": "cb1fbc12-c17c-4f62-a768-ef147b37737e",
+        "custom": true
+      },
+      {
+        "label": "Qwen-3.6-Flash",
+        "value": "af0ed6ca-3b23-4f39-a6fe-e04467e972c6",
+        "custom": true
+      },
+      {
+        "label": "DeepSeek-v4-Pro",
+        "value": "4ddf15a0-a905-470b-b551-3d346502d0d7",
+        "custom": true
+      },
+      {
+        "label": "DeepSeek-V4-Pro-0813",
+        "value": "c9937fac-1731-44ca-8511-0ecd7992a9b0",
+        "custom": true
+      },
+      {
+        "label": "DeepSeek-V4.1-Flash",
+        "value": "64a64777-8f15-4708-ba75-fb70d51d1678",
+        "custom": true
+      },
+      {
+        "label": "DeepSeek-V4-Flash-0731",
+        "value": "22c87f28-7cbf-4b57-bf04-b5981489e13b",
+        "custom": true
+      },
+      {
+        "label": "GLM-5.3",
+        "value": "514a4a72-a734-4e01-9911-ff2cd8ab24ff",
+        "custom": true
+      },
+      {
+        "label": "GLM-5.2",
+        "value": "dd3c2d59-aa22-49a9-8a09-9c37cd7f5ed2",
+        "custom": true
+      }
+    ]
+  },
+  "pi": {
+    "at": "2026-10-26T18:54:29.683Z",
+    "homes": {
+      "ark": [
+        "deepseek-v4.1-flash",
+        "glm-5.3-flash",
+        "kimi-k3"
+      ],
+      "ocgo": [
+        "deepseek-v4.1-flash",
+        "glm-5.3-flash",
+        "longcat-2.5-preview-free",
+        "step-5-preview-free"
+      ],
+      "SiliconFlow": [
+        "deepseek-ai/DeepSeek-V4-Flash",
+        "zai-org/GLM-5.3-Flash"
+      ],
+      "u2": [
+        "u2-flash"
+      ],
+      "xiaomi-token-plan-cn": [
+        "mimo-v2.5",
+        "mimo-v2.5-pro",
+        "mimo-v2.6-flash",
+        "mimo-v2.6-pro"
+      ]
+    }
+  }
+}

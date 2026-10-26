@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>班组看板</title>
+  <!-- ★ b124：桌面窗口（Edge `--app`）的窗口图标与任务栏图标＝这个 favicon。
+       原来这里没写、服务端 `/favicon.ico` 又直接返 204 ⇒ 窗口顶着**Edge 的通用图标**，
+       "看起来就是个网页"的观感有一半来自这里。图标文件＝`_unattended\面板\board.ico`（经典 BMP 条目，非 PNG-in-ICO）。 -->
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/页面.css">
+</head>
+<body>
+  <div id="app"></div>
+  <!-- 共享逻辑核心：与服务端同一份（= client.js 标记区，服务端启动时逐字节自校过）。
+       经典脚本，不是 ESM —— 宿主与浏览器都按经典脚本加载，两边才可能共用同一段。 -->
+  <script src="/core.js"></script>
+  <!-- ★ b204：「运转链」页（链路可视化）—— 整页只读，2 秒轮询 /chain.json；原生 DOM ＋ 手写 SVG，不引框架。
+       必须排在 页面.js 之前：页面.js 启动时要调它的 mount()，切换视图时调 enter()/leave()。 -->
+  <script src="/链路页.js"></script>
+  <script src="/页面.js"></script>
+</body>
+</html>

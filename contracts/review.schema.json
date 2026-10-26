@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:crew:contract:review:v1",
+  "title": "crew review（审核结论机器块）",
+  "description": "放行只认这个块。`decision` 是结论；`review.ok` 这种『调用成功当通过』的口径已废弃（改成 callOk，且不作为放行依据）。",
+  "type": "object",
+  "required": ["schema", "decision", "gateStamp", "snapshotId"],
+  "additionalProperties": true,
+  "properties": {
+    "schema": { "const": 1 },
+    "decision": { "enum": ["pass", "reject", "blocked"] },
+    "gateStamp": { "type": "string", "minLength": 1, "description": "审核绑定的那份门禁 stamp" },
+    "snapshotId": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "blockers": { "type": "array", "items": { "type": "string" } },
+    "reviewId": { "type": ["string", "null"] },
+    "at": { "type": "string", "format": "date-time" }
+  },
+  "not": { "required": ["ok"], "description": "机器块里不许出现 `ok` —— 那是调用状态，不是审核结论" },
+  "examples": [
+    {
+      "schema": 1,
+      "decision": "pass",
+      "gateStamp": "2026-10-26-01-00-00",
+      "snapshotId": "sha256:7c4109c313c2db8f56f714ca2d617ad1074950e8afad6f6a0a5034d2721a66da",
+      "blockers": [],
+      "reviewId": "REVIEW-1",
+      "at": "2026-10-26T01:30:00.000Z"
+    }
+  ]
+}

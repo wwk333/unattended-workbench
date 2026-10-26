@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:crew:contract:release:v1",
+  "title": "crew release-status（交付放行）",
+  "description": "交付放行只有一个机器来源：交付门写 _crew/release-status.json。accepted 只能由用户验收后记录（大脑不得自批）。",
+  "type": "object",
+  "required": ["schema", "kind", "at", "source", "state", "stale", "snapshotId", "blockers"],
+  "additionalProperties": true,
+  "properties": {
+    "schema": { "const": 1 },
+    "kind": { "const": "release-status" },
+    "at": { "type": "string", "format": "date-time" },
+    "source": { "const": "交付门.mjs" },
+    "state": { "enum": ["blocked", "ready", "accepted", "rejected", "stale"] },
+    "stale": { "type": "boolean" },
+    "snapshotId": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "blockers": { "type": "array", "items": { "type": "string" } },
+    "waivers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["by", "why", "at"],
+        "properties": { "by": { "type": "string" }, "why": { "type": "string" }, "at": { "type": "string" } },
+        "additionalProperties": true
+      }
+    },
+    "acceptedBy": { "type": ["string", "null"] },
+    "acceptedAt": { "type": ["string", "null"] },
+    "gate": { "type": ["object", "null"] },
+    "review": { "type": "object" },
+    "e2e": { "type": "object" }
+  },
+  "examples": [
+    {
+      "schema": 1,
+      "kind": "release-status",
+      "at": "2026-10-26T01:40:00.000Z",
+      "source": "交付门.mjs",
+      "state": "ready",
+      "stale": false,
+      "snapshotId": "sha256:7c4109c313c2db8f56f714ca2d617ad1074950e8afad6f6a0a5034d2721a66da",
+      "blockers": [],
+      "waivers": []
+    }
+  ]
+}

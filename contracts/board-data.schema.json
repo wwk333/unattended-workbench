@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:crew:contract:board-data:v1",
+  "title": "crew board-data（看板缓存视图）",
+  "description": "board-data.json 只是缓存视图，不是真相。必须自报 schema/generatedAt/sources[]/stale；任何源 unknown 都不许当绿。",
+  "type": "object",
+  "required": ["schema", "kind", "generatedAt", "source", "stale", "sources", "health"],
+  "additionalProperties": true,
+  "properties": {
+    "schema": { "const": 1 },
+    "kind": { "const": "board-data" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "source": { "const": "看板数据.mjs" },
+    "stale": { "type": "boolean" },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "state", "stale"],
+        "properties": {
+          "id": { "type": "string" },
+          "state": { "enum": ["green", "yellow", "red", "unknown", "state-service", "unavailable", "none"] },
+          "stale": { "type": "boolean" },
+          "file": { "type": ["string", "null"] },
+          "writer": { "type": "string" },
+          "why": { "type": ["string", "null"] }
+        },
+        "additionalProperties": true
+      }
+    },
+    "health": {
+      "type": "object",
+      "required": ["summary", "allGreen"],
+      "properties": {
+        "summary": {
+          "type": "object",
+          "required": ["green", "red", "unknown"],
+          "properties": {
+            "green": { "type": "integer", "minimum": 0 },
+            "yellow": { "type": "integer", "minimum": 0 },
+            "red": { "type": "integer", "minimum": 0 },
+            "unknown": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": true
+        },
+        "allGreen": { "type": "boolean" },
+        "unknownIds": { "type": "array", "items": { "type": "string" } },
+        "redIds": { "type": "array", "items": { "type": "string" } },
+        "line": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "tasksSource": {
+      "type": "object",
+      "required": ["id", "state"],
+      "properties": {
+        "id": { "const": "tasks" },
+        "state": { "enum": ["state-service", "unavailable", "none"] },
+        "stale": { "type": "boolean" },
+        "why": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    }
+  },
+  "examples": [
+    {
+      "schema": 1,
+      "kind": "board-data",
+      "generatedAt": "2026-10-26T01:50:00.000Z",
+      "source": "看板数据.mjs",
+      "stale": false,
+      "sources": [{ "id": "longlive", "state": "green", "stale": false, "writer": "长命资源巡检.mjs" }],
+      "health": { "summary": { "green": 1, "yellow": 0, "red": 0, "unknown": 0 }, "allGreen": true, "unknownIds": [], "redIds": [] }
+    }
+  ]
+}

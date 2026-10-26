@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:crew:contract:attempt:v1",
+  "title": "crew attempt（一次载体调用）",
+  "description": "attempt 只允许 running/completed/failed/aborted 四态 —— blocked 只能属于 task/release。",
+  "type": "object",
+  "required": ["schema", "attemptId", "runId", "taskId", "state"],
+  "additionalProperties": true,
+  "properties": {
+    "schema": { "const": 1 },
+    "attemptId": { "type": "string", "minLength": 1 },
+    "runId": { "type": "string", "minLength": 1 },
+    "taskId": { "type": "string", "minLength": 1 },
+    "attemptKind": {
+      "enum": ["initial", "retry", "capability", "rescue", "rework", "judge", "resume"]
+    },
+    "state": { "enum": ["running", "completed", "failed", "aborted"] },
+    "role": { "type": ["string", "null"] },
+    "carrier": { "type": ["string", "null"] },
+    "sessionId": { "type": ["string", "null"] },
+    "pid": { "type": ["integer", "null"] },
+    "route": {
+      "type": "object",
+      "description": "requested/selected/actual 三个都要留；不一致即 route-mismatch",
+      "properties": {
+        "requested": { "type": ["object", "null"] },
+        "selected": { "type": ["object", "null"] },
+        "actual": { "type": ["object", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "failure": {
+      "type": ["object", "null"],
+      "properties": {
+        "verdict": { "type": "string" },
+        "reason": { "type": ["string", "null"] },
+        "why": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "budgetUsed": { "type": "integer", "minimum": 0, "description": "judge 记 0（不算编码预算）" },
+    "version": { "type": "integer", "minimum": 1 }
+  },
+  "examples": [
+    {
+      "schema": 1,
+      "attemptId": "A-1",
+      "runId": "R-1",
+      "taskId": "T1",
+      "attemptKind": "capability",
+      "state": "aborted",
+      "failure": { "verdict": "capability", "reason": "capability-escalation" },
+      "budgetUsed": 1,
+      "version": 2
+    }
+  ]
+}

@@ -1,0 +1,432 @@
+{
+  "_说明": "班组配置**示例**：结构齐全、模型留空。复制成 config\\agents.json 后在看板里给每个角色选模型。",
+  "modelSource": {
+    "说明": "「该用什么模型 / 什么档位」的唯一权威源 = 看板（选完就落在本文件的 roles 段）。★2026-10-13 用户拍板：原《模型挡位性价比》文档有时效性、已删，不再引用。",
+    "真值": "roles.<角色>.prefer.model / roles.<角色>.prefer.effort（改模型只在看板里改）",
+    "实际跑什么": "以 _crew\\tasks\\<ID>.dispatch.json 的 roleLine 为准（看板会改 agents.json，旧值会漂）",
+    "找不到时": "**停下问用户**，不许凭记忆或上次的名单猜。"
+  },
+  "defaultAgent": "pi",
+  "agents": {
+    "pi": {
+      "说明": "Pi Coding Agent：内置认识阿里 token plan（注入 QWEN_TOKEN_PLAN_CN_API_KEY 就有 20 个模型，不用写 models.json）。★ 实测 2026-10-03：真写出文件 3.5s。",
+      "kind": "generic",
+      "node": "${NODE}",
+      "entry": "${AGENTS}\\node_modules\\@earendil-works\\pi-coding-agent\\dist\\bundle\\cli.js",
+      "printArgs": [
+        "-p",
+        "--mode",
+        "json"
+      ],
+      "modelFlag": "--model",
+      "effortFlag": "--thinking",
+      "sessionFlag": "--session",
+      "会话注": "★ 2026-10-10（④思考层·T3 侦察）：**摘掉了 `--no-session`** —— 它让 Pi 的会话不落盘（实测 `~/.pi` 下连 `agent\\sessions\\` 都没有、零个会话文件）⇒ Pi 的「继续」永远不可能成立。**安全性已读包内源码证实**（`dist\\bundle\\chunks\\chunk-OIM2DMFI.js` 的 `createSessionManager()`）：没给 `--continue/--resume/--session` 时走**默认分支 `SessionManager.create`＝新建会话**，不会自动续上一会话（源码片段留档 `_probe\\think-recon\\pi-session-select.txt`）。★ **2026-10-10 极小真跑已验证**（`_角色自检.mjs`）：输出形状**未变**（事件类型一个没少）、**会话真落盘**（`~/.pi/agent/sessions/--D--…--/2026-10-10T10-51-42-253Z_<id>.jsonl`，40 KB）。⚠️ **老账本里的会话号是 `--no-session` 时代的、盘上没有** ⇒ 面板的「继续」会核对「会话在不在盘上」，不在就**如实报错、不拼注定失败的假命令**（`面板\\帧动作.mjs` 的 `sessionOnDisk()`）。★ 续跑旗标选 **`--session`**（不是 `--session-id`）：前者找不到会话**响亮报错**；后者会「悄悄新建一个同 id 的空会话」＝**假续上**，正是本项目最恨的那种静默。",
+      "env": {
+        "QWEN_TOKEN_PLAN_CN_API_KEY": "${CRED:QWEN_TOKEN_PLAN_CN_API_KEY}",
+        "XIAOMI_API_KEY": "${CRED:XIAOMI_API_KEY}",
+        "XIAOMI_TOKEN_PLAN_CN_API_KEY": "${CRED:XIAOMI_API_KEY}"
+      },
+      "envClear": [
+        "CI"
+      ],
+      "timeoutMin": 45,
+      "timeoutMin注": "已废弃（2026-10-09 八·S1）—— 全项目零消费点（死字段）；真值＝编排.mjs --timeout-min（默认 90 分钟）／coder-b-dsh.mjs 20／台账.mjs 10。不要再加回消费点。",
+      "notes": "只读是官方的：--tools read,grep,find,ls。要写文件时靠 --approve 信任项目本地文件（非交互下不弹窗）。★2026-10-04 timeoutMin 20→45：异次元 T1 实测 19.5 分钟压线（含装依赖+构建+单测+30 错误码比对），20 分钟会误杀大任务。"
+    },
+    "opencode": {
+      "说明": "OpenCode：两个角色都在它上面（coder-b 可写 / researcher 只读），靠 --agent 区分。★ 实测 2026-10-03：真写出文件 6.9s、信封带 tokens。",
+      "kind": "generic",
+      "entry": "${AGENTS}\\opencode\\opencode.exe",
+      "printArgs": [
+        "run",
+        "--standalone",
+        "--format",
+        "json",
+        "--auto",
+        "--thinking"
+      ],
+      "modelFlag": "--model",
+      "sessionFlag": "--session",
+      "思考注": "★ 2026-10-10（④思考层·T2/T3 侦察）：**加了 `--thinking`** —— OpenCode 的思考块**默认不吐**（2026-10-09 样本里只有思考 token 数 `part.tokens.reasoning: 1493`，**没有正文**），而 `run --thinking` 的官方说明正是「Show thinking blocks」。★ **2026-10-10 极小真跑已确认形状**：`{\"type\":\"reasoning\",\"part\":{\"type\":\"reasoning\",\"text\":\"…正文…\"}}`（留档 `_probe\\board-look\\samples\\opencode-thinking.jsonl`）⇒ 翻译器 `面板\\adapters\\opencode.mjs` 已把这条列为主路径。★ `--session <id>` 的语义是「不存在则新建」＝**软续**（不像 Pi 那样报错），所以续跑回执要如实标注「可能没真续上」。",
+      "env": {
+        "OPENCODE_CONFIG": "${AGENTS}\\config\\opencode\\opencode.json",
+        "QWEN_TOKEN_PLAN_CN_API_KEY": "${CRED:QWEN_TOKEN_PLAN_CN_API_KEY}",
+        "ARK_API_KEY": "${CRED:ARK_API_KEY}",
+        "XIAOMI_TOKEN_PLAN_CN_API_KEY": "${CRED:XIAOMI_API_KEY}"
+      },
+      "envClear": [
+        "CI"
+      ],
+      "timeoutMin": 45,
+      "timeoutMin注": "已废弃（2026-10-09 八·S1）—— 全项目零消费点（死字段）；真值＝编排.mjs --timeout-min（默认 90 分钟）／coder-b-dsh.mjs 20／台账.mjs 10。不要再加回消费点。",
+      "notes": "⚠️ 必须 --standalone：否则连本机常驻服务、key 传不进去（实测 401）。无 --dir 参数，工作目录靠子进程 cwd。模型写法 'provider/model'。★2026-10-04 timeoutMin 20→45（与 pi 同因：大任务 20 分钟不够）。"
+    },
+    "codex": {
+      "说明": "Codex CLI：自带 exec review + 系统级只读沙箱；配置走包内 ${AGENTS}\\config\\codex，不碰桌面应用那套 ~/.codex。",
+      "kind": "generic",
+      "node": "${NODE}",
+      "entry": "${AGENTS}\\node_modules\\@openai\\codex\\bin\\codex.js",
+      "printArgs": [
+        "exec",
+        "--skip-git-repo-check"
+      ],
+      "modelFlag": "-m",
+      "dirFlag": "-C",
+      "effortArgs": [
+        "-c",
+        "model_reasoning_effort=${EFFORT}"
+      ],
+      "续跑注": "★ 2026-10-10（T3）：Codex 的续跑是**子命令**（`codex exec resume <id>` / `--last`、`codex exec fork`），不是「旗标＋值」⇒ 现有 sessionFlag 机制表达不了，故**不声明 sessionFlag**（未进编制，要用时再单独接线）。",
+      "env": {
+        "CODEX_HOME": "${AGENTS}\\config\\codex",
+        "ARK_API_KEY": "${CRED:ARK_API_KEY}"
+      },
+      "envClear": [
+        "CI"
+      ],
+      "timeoutMin": 20,
+      "timeoutMin注": "已废弃（2026-10-09 八·S1）—— 全项目零消费点（死字段）；真值＝编排.mjs --timeout-min（默认 90 分钟）／coder-b-dsh.mjs 20／台账.mjs 10。不要再加回消费点。",
+      "notes": "必加 --skip-git-repo-check（否则 Not inside a trusted directory）+ -C <目录>。档位要写成 -c model_reasoning_effort=<档位>。⚠️ 只能走火山的 Responses 口（0.155 起不再支持 wire_api=chat）→ 阿里那条口接不上。异步 IPC 在外层沙箱里会失败，需普通终端。"
+    },
+    "qoder": {
+      "说明": "Qoder CN CLI（急救用）：它自己的登录态与加密配置在 ~/.qoder-cn（不能进包，各人自己配）。",
+      "kind": "qoder",
+      "node": "${NODE}",
+      "entry": "${AGENTS}\\node_modules\\@qodercn-ai\\qoderclicn\\bundle\\qoderclicn.js",
+      "printArgs": [
+        "-p",
+        "-o",
+        "json"
+      ],
+      "modelFlag": "-m",
+      "effortFlag": "--reasoning-effort",
+      "allowToolsFlag": "--allowed-tools",
+      "denyToolsFlag": "--disallowed-tools",
+      "worktreeFlag": "--worktree",
+      "dirFlag": "-w",
+      "permissionMode": "auto",
+      "envClear": [
+        "CI"
+      ],
+      "timeoutMin": 20,
+      "timeoutMin注": "已废弃（2026-10-09 八·S1）—— 全项目零消费点（死字段）；真值＝编排.mjs --timeout-min（默认 90 分钟）／coder-b-dsh.mjs 20／台账.mjs 10。不要再加回消费点。",
+      "notes": "⚠️ 输出必须重定向到文件、绝不接管道（实测接管道 exit 42、零输出）。自定义模型按 modelID 选。"
+    },
+    "qwencode": {
+      "说明": "Qwen Code 0.25.0（rescue 位，2026-10-09 替换 Qoder）：headless 走 --output-format json + --yolo（auto 档 fail-closed 会退化成等人批）。端点走 OPENAI_BASE_URL 钉死火山 ark，模型写裸名。",
+      "kind": "generic",
+      "node": "${NODE}",
+      "entry": "${AGENTS}\\node_modules\\@qwen-code\\qwen-code\\cli-entry.js",
+      "printArgs": [
+        "--output-format",
+        "stream-json",
+        "--yolo",
+        "--auth-type",
+        "openai"
+      ],
+      "modelFlag": "--model",
+      "modelArgBare": true,
+      "modelArgBare注": "★ 2026-10-13（b72）：**这个载体的 `--model` 只吃裸模型名** —— 它走 `settings.json` 的 `modelProviders`（家即 provider 段），模型名一律裸写 ⇒ 收到 `家/模型` 时要**剥掉 `家/`**。以前这段是按载体名写死的（只认 qwencode），现改成**数据驱动**（同一件事两个载体，别再各写一遍）。",
+      "sessionFlag": "--resume",
+      "env": {
+        "OPENAI_BASE_URL": "https://ark.cn-beijing.volces.com/api/coding/v3",
+        "OPENAI_API_KEY": "${CRED:ARK_API_KEY}",
+        "QWEN_CODE_SUPPRESS_YOLO_WARNING": "1"
+      },
+      "envClear": [
+        "CI"
+      ],
+      "timeoutMin": 20,
+      "timeoutMin注": "已废弃（2026-10-09 八·S1）—— 全项目零消费点（死字段）；真值＝编排.mjs --timeout-min（默认 90 分钟）／coder-b-dsh.mjs 20／台账.mjs 10。不要再加回消费点。",
+      "notes": "★★ 2026-10-13（b71）**切 `--output-format stream-json`**（用户拍板\"直接花费 token 做小测试\"）。理由＝A/B 实测：现状 `json` **首块 6199ms／99% 处、只有 1 块**（＝攒到最后一次性吐 ⇒「边跑边看」永远看不见进度）；切 `stream-json` 后**首块 2559ms／51% 处、4 块**（JSONL 一行一个对象）。**回退＝把上面 printArgs 里那一格改回 `json`**（解析器与四个翻译器**两种包装都吃**，回退**不需要改代码**）。★ 形状：事件 `system/init → stream_event → assistant×N → result/success`，与数组族**同源同字段**（已补进 `_解析器自检.mjs` 的 ㉕–㉙）。★ 全项目唯一用官方 OPENAI_* 环境变量接第三方的载体。★ 2026-10-09 S3 实测两条：① 非交互必须 `--auth-type openai`（只给 env 会报 No auth type）＝chat 口；② 输出形状＝JSON 数组、末元素 type:result（usage：input_tokens / output_tokens / cache_read_input_tokens）。档位无通道，见「档位注」字段。"
+    },
+    "codebuddy": {
+      "说明": "CodeBuddy Code（腾讯）：★2026-10-09 升**官方 npm 包** `@tencent-ai/codebuddy-code@2.163.0`（--save-exact 钉版；原钉住副本 `codebuddy-cli\\` 2.147.0 **保留可回退**，回退＝entry 改回原路径）。入口 `bin\\codebuddy` **没有扩展名**（靠 shebang 判断用 node 起）。",
+      "kind": "generic",
+      "node": "${NODE}",
+      "entry": "${AGENTS}\\node_modules\\@tencent-ai\\codebuddy-code\\bin\\codebuddy",
+      "printArgs": [
+        "-p",
+        "--output-format",
+        "stream-json"
+      ],
+      "modelFlag": "--model",
+      "effortFlag": "--effort",
+      "sessionFlag": "--resume",
+      "env": {
+        "CODEBUDDY_BASE_URL": "https://ark.cn-beijing.volces.com/api/coding/v3",
+        "CODEBUDDY_API_KEY": "${CRED:ARK_API_KEY}",
+        "CODEBUDDY_CONFIG_DIR": "${AGENTS}\\config\\codebuddy",
+        "CODEBUDDY_FORCE_HEADLESS_BUNDLE": "1",
+        "CODEBUDDY_INTERNET_ENVIRONMENT": "internal"
+      },
+      "envClear": [
+        "CI"
+      ],
+      "timeoutMin": 45,
+      "timeoutMin注": "已废弃（2026-10-09 八·S1）—— 全项目零消费点（死字段）；真值＝编排.mjs --timeout-min（默认 90 分钟）／coder-b-dsh.mjs 20／台账.mjs 10。不要再加回消费点。",
+      "notes": "★★ 2026-10-13（b71）**切 `--output-format stream-json`**（用户拍板\"直接花费 token 做小测试\"）。理由＝A/B 实测：现状 `json` **首块 7197ms／100% 处、只有 1 块**（＝攒到最后一次性吐 ⇒「边跑边看」永远看不见进度）；切 `stream-json` 后**首块 1950ms／30% 处、5 块**。**回退＝把上面 printArgs 里那一格改回 `json`**（解析器与四个翻译器**两种包装都吃**，回退**不需要改代码**）。⚠️ **这家切过去之后换了一套 schema**（Anthropic 式：`system/init` ＋ `assistant.message.content[]`，**不再是** `message/reasoning/function_call`）⇒ `面板\\会话\\carriers\\codebuddy.mjs` 与 `面板\\adapters\\codebuddy.mjs` **两套都认**；顺带白得一件事：**思考正文出来了**（`{type:'thinking',thinking}`，真样本 `_probe\\stream-json\\reviewer.stream-json.jsonl`）。★2026-10-09 升级留档：官方包 2.163.0 实测 `--version`/`--help` 参数面与旧版全兼容（`-p` / `--output-format json` / `--permission-mode bypassPermissions` / `--effort max`）；认证前提 `CODEBUDDY_INTERNET_ENVIRONMENT=internal` 已进 env；**2.163 对 custom-local 强制要 models.json（在 CODEBUDDY_CONFIG_DIR 目录下）配 apiKey**（已配：apiKey 字段写 ${CODEBUDDY_API_KEY} 环境引用＝key 不落盘；url＝ark chat/completions；supportsToolCall）。**红了就把 entry 改回 `codebuddy-cli\\bin\\codebuddy`（副本未删）**。旧事实：FORCE_HEADLESS_BUNDLE=1 是钉住副本时代的必需项（官方包保留无害）。档位用 --effort（minimal..max）。模型写 custom-local:<模型名>（实测可喂任意名：kimi-k3 真的转发到火山了）。★ 权限模式由**角色级 extraArgs** 决定（见 roles.reviewer）：`plan`=工具级只读（写不动文件）；`acceptEdits`=可写。⚠️ 2026-10-05 实测补记：**plan 模式下连 Bash 都被拒** → 审核员跑不了任何测试（实跑只能由大脑代执，见 KB `01-架构.md` 与 `REVIEW-W12.md`）。输出是**JSON 数组**，末元素 type=result 才是信封（含 usage / permission_denials / total_cost_usd）。",
+      "mcpConfigFlag": "--mcp-config"
+    },
+    "messenger": {
+      "说明": "DSH headless 载体：★ 2026-10-03 起 coder 不用它（用户口径），改由**调研员**用（一人一角色）。",
+      "kind": "generic",
+      "node": "${NODE}",
+      "entry": "${WORKSPACE}\\_unattended\\coder-b-dsh.mjs",
+      "printArgs": [],
+      "modelFlag": "--model",
+      "modelArgBare": true,
+      "modelArgBare注": "★ 2026-10-13（b72）：**这个载体的 `--model` 只吃裸模型名** —— 家由 `--route` 与现造的 patch 决定（`coder-b-dsh.mjs` 把 `--model` 直接写进 `agent-default-model.model`，而 `models:` 清单一律是裸名）⇒ 收到 `家/模型` 时必须**剥掉 `家/`**，否则 `UNKNOWN_MODEL`（坑库 2026-10-04 那条）。**这条是数据，不是代码里写死的载体名。**",
+      "effortFlag": "--effort",
+      "routeFlag": "--route",
+      "dirFlag": "--cwd",
+      "sessionFlag": null,
+      "续跑注": "★ 2026-10-10（T3）：**这家没有续跑口** —— `coder-b-dsh.mjs` 是一次性 `spawnSync`，没有 resume 参数（宿主 headless 的会话也不由我们管）。⇒ `sessionFlag: null` 是**如实声明**：面板按「继续」时要**明说续不了**，不许拼一条看着像命令的假命令。",
+      "envClear": [],
+      "timeoutMin": 20,
+      "timeoutMin注": "已废弃（2026-10-09 八·S1）—— 全项目零消费点（死字段）；真值＝编排.mjs --timeout-min（默认 90 分钟）／coder-b-dsh.mjs 20／台账.mjs 10。不要再加回消费点。",
+      "notes": "按路由表现造配置、key 现读凭据库注入、prompt 走 stdin。⚠️ 它没有工具级只读手段 → 走它的角色只能是「读为主」的角色（调研员），不能当审核员。"
+    }
+  },
+  "roles": {
+    "coder-a": {
+      "说明": "编程 A：Pi + 阿里 token plan。",
+      "agent": "pi",
+      "prefer": {
+        "model": ""
+      },
+      "fallback": [],
+      "extraArgs": [
+        "--approve"
+      ],
+      "worktree": false,
+      "denyTools": [],
+      "allowTools": null,
+      "为什么 worktree=false": "载体没有 --worktree；本项目不用 git。隔离靠任务卡划界 + 文件指纹 + 集成门禁。",
+      "levels": {
+        "L1": {
+          "model": "",
+          "effortTier": "省"
+        },
+        "L2": {
+          "model": "",
+          "effortTier": "中"
+        },
+        "L3": {
+          "model": "",
+          "effortTier": "狠"
+        },
+        "L4": {
+          "model": "",
+          "effortTier": "狠"
+        }
+      }
+    },
+    "coder-b": {
+      "说明": "编程 B：OpenCode + 火山 coding plan。",
+      "agent": "opencode",
+      "prefer": {
+        "model": ""
+      },
+      "fallback": [],
+      "extraArgs": [
+        "--agent",
+        "build"
+      ],
+      "worktree": false,
+      "denyTools": [],
+      "allowTools": null,
+      "档位待验": "★2026-10-04 用户拍板按文档补 high（那条口没有 max 档）。OpenCode 没有独立档位参数（模型可写 provider/model#variant）；high 到底怎么被接受，以 _角色自检 实测为准。",
+      "levels": {
+        "L1": {
+          "model": "",
+          "effortTier": "省"
+        },
+        "L2": {
+          "model": "",
+          "effortTier": "中"
+        },
+        "L3": {
+          "model": "",
+          "effortTier": "狠"
+        },
+        "L4": {
+          "model": "",
+          "effortTier": "狠"
+        }
+      }
+    },
+    "reviewer": {
+      "说明": "审核员：**唯一跑全量测试的角色 + 可以修小 bug**（2026-10-05 用户拍板，废除「只读铁律」）。零 token 的 `门禁.mjs` 才是全量测试的执行者与机器签字方，审核员读它的摘要、修红、复跑到绿。",
+      "agent": "codebuddy",
+      "prefer": {
+        "model": ""
+      },
+      "fallback": [],
+      "extraArgs": [
+        "--permission-mode",
+        "bypassPermissions"
+      ],
+      "worktree": false,
+      "denyTools": [],
+      "allowTools": null,
+      "复核时多问一句": "这次有没有再犯库里记过的同类坑？",
+      "★ 迭代技巧（实测：全量门禁一次约 60 秒）": "改红的时候**不必每改一次就跑全量**：先 `node _unattended\\门禁.mjs --project <项目> --only build,unit`（约 10 秒）确认编译与单测过，最后**修完再跑一次全量**拿「红→绿」证据。（⚠️ 别用 `--only build,test` —— 2026-10-06 修掉的假绿坑：test 曾被静默跳过还报全绿；现已做 test≡unit 别名，统一写 build,unit）",
+      "四条护栏": "① 只改工单白名单内的文件（越界由文件指纹抓）② 不许碰 CONTRACT.md / PROJECT_BLUEPRINT.md（要改上报大脑）③ 每个修复必须留「哪条命令原来红 → 改完复跑的命令与结果」④ 不许加功能、不许顺手重构。写死在任务卡里（`派活.mjs` 的 roleTestBlock）。",
+      "★ 权限模式四次实测（2026-10-06，别再来回试）": [
+        "`plan`               = 工具级只读：**连 Bash 都拒** → 审核员一次测试都没跑成（实跑只能由大脑代执，见 KB `01-架构.md`）。",
+        "`acceptEdits`        = 能改文件、**Bash 仍被拒** → 实测它当场回「两个 shell 工具都被禁了，我无法执行」并拒绝动工（它做对了）。",
+        "`auto`               = 与 Qoder 同档，**实测在 CodeBuddy `-p`（非交互）下 Bash 依然被拒**（原话：`Permission to use Bash has been denied … in non-interactive mode`）—— 该档在打印模式下不生效。",
+        "`bypassPermissions`（当前值） = 跳过一切权限检查 → **唯一能真跑命令的档**。代价要认：它有全权（不是只读）。所以护栏从'权限'换成'证据'：四条护栏 + 文件指纹 + 只许改白名单内的文件，越界当场列进收据。"
+      ],
+      "为什么删掉 fallback": "原 fallback 是 `custom-local:glm-5.3`，而 **glm-5.3 正是 coder-b（OpenCode·ark/glm-5.3-flash）同一族** —— 一旦降级，审核员与编程**同源**，「异源独立」当场作废。宁可不可用（报错停下叫人），也不要静默同源。",
+      "备注": "★ 2026-10-04 用户拍板按文档补 effort=max（CodeBuddy 的 --effort 支持 minimal..max）。★ 2026-10-03 两次改：先因 Codex 在本机**普通终端也起不来**（failed to initialize in-process app-server client: 拒绝访问）改用 OpenCode；再因用户要求「一人一角色」改用 **CodeBuddy**（OpenCode 只留 coder-b）。模型仍是文档建议的 kimi-k3（走火山）。★ 2026-10-05 第三次改：`--permission-mode plan` → `acceptEdits`（原因：plan 连 Bash 都拒，审核员一次测试都没跑成），并按用户口径把「跑测试」正式划给审核员。",
+      "levels": {
+        "L1": {
+          "model": "",
+          "effortTier": "省"
+        },
+        "L2": {
+          "model": "",
+          "effortTier": "中"
+        },
+        "L3": {
+          "model": "",
+          "effortTier": "中"
+        },
+        "L4": {
+          "model": "",
+          "effortTier": "中"
+        }
+      }
+    },
+    "researcher": {
+      "说明": "调研员：只读为主 + 异源判定（**联网归大脑**，它只做交叉验证）。载体=**DSH headless**（一人一角色：DSH 不再当 coder，改跑调研）。",
+      "agent": "messenger",
+      "route": "ocgo",
+      "prefer": {
+        "model": ""
+      },
+      "档位注（2026-10-13）": "★ b72 实测：**这家（xiaomi 段）在档案里没有声明 `reasoningEfforts`** ⇒ 传 `--effort max` 被 DSH **fail-closed 拒**：`UNSUPPORTED_REASONING_EFFORT: provider \"xiaomi\" model \"mimo-v2.6-flash\" does not support reasoning effort \"max\"`（调研员整个跑不起来）。⇒ 口径：**档案没声明档位 ⇒ 我们不传**（`buildInvocation` 见 effort 为空就整段不出）。⚠️ 同源隐患：**换家（额度兜底）之后档位没有跟着校验** —— 10-09 那次是 route=ark（ark 段有声明）所以 max 能用，换到 xiaomi 就废；这条还没做机器闸。",
+      "fallback": [],
+      "extraArgs": [],
+      "worktree": false,
+      "denyTools": [],
+      "allowTools": null,
+      "⚠️ 只读降级": "DSH headless 走我们自己的 patch 生成器，**没有工具级只读手段** → 这条角色的只读从「系统级」降为「任务卡级（约定）」。之所以接受：调研员用得极少、以读为主、且**联网已归大脑**（它不做外部动作）。要塞硬约束的话改用 Pi 的 `--tools read,grep,find,ls`（但那会占掉 coder-a 的载体）。",
+      "派它的时机": [
+        "① 需要查外部资料（库/协议/报错的具体做法），且代码里查不到；",
+        "② 审核员和 coder 对某个结论都坚持，需要第三方异源交叉验证；",
+        "③ 选型决策需要摆对比清单。",
+        "**不自动触发**：派它是判断性动作，由大脑决定并说明理由。"
+      ],
+      "修复注（2026-10-09）": "双重命名空间修复：route=ark 时模型写路由表内**裸 id**（原 `xiaomi/mimo-v2.6-flash`＋`--route xiaomi` 叠前缀 ⇒ UNKNOWN_MODEL）；档位 xhigh→max（ark 段有 reasoningEfforts 声明）。历史：10-03 指定 qwen3.8-max → 10-04 改 flash（与大脑异名）→ 10-07 看板改小米——撞上双命名空间坏件；本日修毕并实跑通过。",
+      "levels": {
+        "L1": {
+          "model": "",
+          "effortTier": "省"
+        },
+        "L2": {
+          "model": "",
+          "effortTier": "中"
+        },
+        "L3": {
+          "model": "",
+          "effortTier": "中"
+        },
+        "L4": {
+          "model": "",
+          "effortTier": "中"
+        }
+      }
+    },
+    "rescue": {
+      "说明": "急救：只在「干活的确实搞不定」时自动拉起（每任务 1 次）。载体=Qwen Code（可写、平时闲置；2026-10-09 由 Qoder 换入）——**刻意不与任何一个 coder 同载体**，否则一起挂就没救了。",
+      "agent": "qwencode",
+      "prefer": {
+        "model": ""
+      },
+      "fallback": [],
+      "档位注": "★ 2026-10-09 S3 实测：0.25.0 无任何 CLI/环境档位通道（help＋全包 grep 无 reasoning-effort；未知参数被静默忽略）⇒ 与 coder-b 同款处理：本值仅作**意图记录**、实际不生效；将来 Qwen 出通道再接线。",
+      "worktree": false,
+      "denyTools": [],
+      "allowTools": null,
+      "触发": "集成门禁失败，或编码连续失败（flaky-twice / input-error）→ 编排自动拉起一次",
+      "不许拉急救的情形": "账号类 / 权限类故障 —— 换人也解决不了，只是白烧额度的钱",
+      "levels": {
+        "L1": {
+          "model": "",
+          "effortTier": "省"
+        },
+        "L2": {
+          "model": "",
+          "effortTier": "中"
+        },
+        "L3": {
+          "model": "",
+          "effortTier": "狠"
+        },
+        "L4": {
+          "model": "",
+          "effortTier": "狠"
+        }
+      }
+    }
+  },
+  "大脑模型": {
+    "说明": "★ 大脑（本会话自己）**不是班组**，也不在本文件的 roles 里 —— 它的载体是 DSH 会话，模型由**新建会话时的模型 chip** 选（用户 2026-10-03 再次确认）。",
+    "为什么不在 roles 里放 brain": "放了会被看板/自检当成'大脑在用的模型'读走，与实际会话框里选的模型对不上（典型的静默过期）。"
+  },
+  "失败处置": {
+    "指针": "见 _unattended/_失败处置.mjs（唯一真源，D20）",
+    "为什么": "这张表以前没有任何代码读（全仓 grep = 0 处），改了它行为不会变 ⇒ 删掉内容，只留指针，免得两处写同一件事还互相矛盾。",
+    "原内容": "已删除（2026-10-23 动工 D20）"
+  },
+  "levels": {
+    "说明": "任务分级 L1–L4 的**全局预设包**（每个\"级\"是什么形状：步数预算 / 验证强度 / 卡片形态）。★ **模型名一律不写在这里、也不写进任何代码或文档** —— 每级用什么模型只由用户在看板里定，落在 roles.<角色>.levels.<级>。本段缺失或某维没配时，派活侧取最保守值（gate=full / shape=std）。依据＝KB `重构\\任务分级-施工文档.md` §1 / §3。",
+    "L1": {
+      "一句话": "小改：不新增逻辑的机械改（改常量 / 文案 / 断言 / 加一行日志）",
+      "steps": "≤10",
+      "gate": "ac",
+      "shape": "slim"
+    },
+    "L2": {
+      "一句话": "写代码：一个模块内新增或修改逻辑（新函数 / 新分支 / 接线 / 修 bug）",
+      "steps": "≤30",
+      "gate": "quick",
+      "shape": "std"
+    },
+    "L3": {
+      "一句话": "跨模块/要定位：跨模块，或要先\"复现＋定位\"，或碰 DTO/字段口径",
+      "steps": "≤60",
+      "gate": "full",
+      "shape": "std"
+    },
+    "L4": {
+      "一句话": "架构/契约：接新依赖 / 改契约·蓝图 / 动库结构",
+      "steps": "不限",
+      "gate": "full",
+      "shape": "full"
+    },
+    "effortTiers": {
+      "说明": "思考档位三档抽象：界面只给 省/中/狠，落地时按**该模型自己的白名单**取第一个支持的（读 DSH 档案的 reasoningEfforts）。这三个数组是**候选串**（不是模型名）：换成别家/开源后直接改这里，不用改代码。依据＝KB `重构\\任务分级-施工文档.md` §3.5。",
+      "省": [
+        "off",
+        "none",
+        "minimal",
+        "low"
+      ],
+      "中": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "狠": [
+        "max",
+        "high"
+      ]
+    }
+  },
+  "_清空了什么": "roles.*.prefer.model / roles.*.levels.*.model / fallback"
+}

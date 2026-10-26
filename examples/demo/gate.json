@@ -1,0 +1,18 @@
+{
+  "steps": [
+    { "name": "unit", "kind": "unit", "cmd": "node tests/unit.mjs" },
+    {
+      "name": "entry",
+      "kind": "e2e",
+      "required": true,
+      "cmd": "node tests/entry-acceptance.mjs",
+      "timeoutSec": 120,
+      "evidence": "_crew/gate/entry-evidence.json"
+    }
+  ],
+  "snapshot": {
+    "include": ["src/**", "tests/**", "gate.json"],
+    "exclude": []
+  },
+  "requireAC": false
+}

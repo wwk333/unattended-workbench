@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:crew:contract:task:v1",
+  "title": "crew task（任务卡）",
+  "description": "任务生命周期。state 只能是 task 那七种；blocked 属于 task。status 真相在 C 状态库，本文件只是数据格式说明书。",
+  "type": "object",
+  "required": ["schema", "id", "status"],
+  "additionalProperties": true,
+  "properties": {
+    "schema": { "const": 1 },
+    "id": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["pending", "ready", "doing", "review", "done", "blocked", "dropped"] },
+    "wave": { "type": ["string", "null"] },
+    "role": { "type": ["string", "null"] },
+    "rolePool": { "type": "array", "items": { "type": "string" } },
+    "assignedRole": { "type": ["string", "null"] },
+    "level": { "type": ["string", "null"] },
+    "goal": { "type": ["string", "null"] },
+    "deliverables": { "type": "array", "items": { "type": "string" } },
+    "depends": { "type": "array", "items": { "type": "string" } },
+    "accept": { "type": "array", "items": { "type": "string" } },
+    "writes": {
+      "description": "写域提示；null = unknown-scope（仍可并行），[] = 明确不写文件",
+      "type": ["array", "null"],
+      "items": { "type": "string" }
+    },
+    "resources": { "type": "array", "items": { "type": "string" } },
+    "legacy": { "type": "boolean", "description": "true = 从旧文件迁移、缺运行收据" },
+    "version": { "type": "integer", "minimum": 1 }
+  },
+  "examples": [
+    {
+      "schema": 1,
+      "id": "T1",
+      "status": "ready",
+      "wave": "W1",
+      "role": "coder-a",
+      "deliverables": ["src/a.js"],
+      "depends": [],
+      "accept": ["`node tests/a.mjs` → 全过"],
+      "writes": ["src/a.js"],
+      "version": 3
+    }
+  ]
+}

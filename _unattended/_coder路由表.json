@@ -1,0 +1,1778 @@
+{
+  "_说明": [
+    "**DSH headless** 载体能用的**模型路由表**。★2026-10-03 更正：本表的使用者现在是 **researcher（调研员）**；历史上它曾给 coder-b 用，但**coder 已不用 DSH**（一人一角色定稿：coder-b = OpenCode + 火山）。",
+    "为什么要抽成一个文件：每个 coder 走不同网关（阿里 token plan / 火山 coding plan），",
+    "   而它们的 baseURL、取 key 的环境变量名、模型清单都不同。写死在代码里就会出现",
+    "   '改了一条路由要动 runner 源码' 这种把配置埋进代码的病。",
+    "每条路由的字段形状来自 DSH 的 pi-ai provider 配置（providers.<名>）——",
+    "   与 <用户目录>\\.dsh\\profiles\\desktop\\cordis.patch.yml 里既有的 ark 段同构。",
+    "★ 两条铁律（都是官方明文 + 实测踩过）：",
+    "  1) baseURL 必须带对协议后缀：阿里 token plan 用 /compatible-mode/v1；",
+    "     火山 coding plan 用 /api/coding/v3。**火山的 /api/v3 不消耗套餐额度、会另外计费**。",
+    "  2) key 一律不写在这里，只写取 key 的**环境变量名**（apiKeyEnv）；值由 runner 现读凭据库注入。"
+  ],
+  "ark": {
+    "说明": "火山方舟 Coding Plan（个人版）。模型名用官方 Model Name 小写形式。",
+    "api": "openai-completions",
+    "baseURL": "https://ark.cn-beijing.volces.com/api/coding/v3",
+    "apiKeyEnv": "ARK_API_KEY",
+    "envField": "ARK_API_KEY",
+    "compat": {
+      "thinkingFormat": "openai",
+      "supportsReasoningEffort": true
+    },
+    "models": [
+      {
+        "id": "glm-5.3-flash",
+        "name": "glm-5.3 flash",
+        "contextWindow": 1048576,
+        "maxTokens": 131072,
+        "input": [
+          "text",
+          "image"
+        ],
+        "reasoningEfforts": {
+          "low": "low",
+          "high": "high",
+          "max": "max"
+        },
+        "keep": true
+      },
+      {
+        "id": "deepseek-v4.1-flash",
+        "name": "deepseek v4.1 flash",
+        "contextWindow": 1048576,
+        "maxTokens": 393216,
+        "input": [
+          "text",
+          "image"
+        ],
+        "reasoningEfforts": {
+          "off": "none",
+          "low": "low",
+          "high": "high",
+          "max": "max"
+        },
+        "keep": true
+      },
+      {
+        "id": "deepseek-v4-pro",
+        "name": "deepseek v4 pro",
+        "contextWindow": 1048576,
+        "maxTokens": 393216,
+        "input": [
+          "text"
+        ],
+        "reasoningEfforts": {
+          "off": "none",
+          "low": "low",
+          "high": "high",
+          "max": "max"
+        },
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "kimi-k3",
+        "name": "kimi k3",
+        "contextWindow": 1048576,
+        "maxTokens": 131072,
+        "input": [
+          "text"
+        ],
+        "reasoningEfforts": {
+          "low": "low",
+          "high": "high",
+          "max": "max"
+        },
+        "keep": true
+      },
+      {
+        "id": "doubao-lite-128k-240428",
+        "removed": true,
+        "removedAt": "2026-10-10T13:52:18.090Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-128k-240515",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-lite-4k-240328",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-lite-32k-240428",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-4k-240515",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-lite-4k-character-240515",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-embedding-text-240515",
+        "removed": true,
+        "removedAt": "2026-10-10T13:52:18.570Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "mistral-7b-instruct-v0.2",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-4k-character-240515",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-4k-functioncall-240515",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-lite-4k-pretrain-character-240516",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-character-240528",
+        "removed": true,
+        "removedAt": "2026-10-10T13:52:18.986Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-4k-browsing-240524",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-functioncall-240515",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-4k-functioncall-240615",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-browsing-240615",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-240615",
+        "removed": true,
+        "removedAt": "2026-10-10T13:52:19.442Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-lite-32k-240628",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-128k-240628",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-embedding-text-240715",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-4k-character-240728",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-functioncall-240815",
+        "removed": true,
+        "removedAt": "2026-10-10T13:52:19.803Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-240828",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-lite-4k-character-240828",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-character-240828",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-lite-32k-240828",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-lite-128k-240828",
+        "removed": true,
+        "removedAt": "2026-10-10T13:52:20.259Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-browsing-240828",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-functioncall-preview",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-embedding-large-text-240915",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-lite-32k-character-241015",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-functioncall-241028",
+        "removed": true,
+        "removedAt": "2026-10-10T13:52:21.330Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-browsing-241115",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-vision-pro-32k-241028",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-vision-lite-32k-241015",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seaweed-241128",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-256k-241115",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-character-241215",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-pro-32k-241215",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1-5-lite-32k-250115",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1-5-pro-32k-250115",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1-5-vision-pro-32k-250115",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-embedding-vision-241215",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1-5-pro-256k-250115",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-v3-241226",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-r1-distill-qwen-7b-250120",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-r1-distill-qwen-32b-250120",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-r1-250120",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1-5-pro-32k-character-250228",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1.5-vision-lite-250315",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-v3-250324",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1.5-vision-pro-250328",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-lite-32k-character-250228",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1.5-ui-tars-250328",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-embedding-vision-250328",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1-5-thinking-pro-250415",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "wan2-1-14b-i2v-250225",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "wan2-1-14b-t2v-250225",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1-5-thinking-pro-m-250415",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedance-1-0-lite-i2v-250428",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedance-1-0-lite-t2v-250428",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedream-3-0-t2i-250415",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "wan2-1-14b-flf2v-250417",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1-5-thinking-vision-pro-250428",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1-5-thinking-pro-m-250428",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-embedding-large-text-250515",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1-5-ui-tars-250428",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-r1-250528",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-1-6-flash-250615",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-1-6-250615",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-1-6-thinking-250615",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedance-1-0-pro-250528",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-embedding-vision-250615",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-1-6-thinking-250715",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-1-5-pro-32k-character-250715",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seededit-3-0-i2i-250628",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-1-6-flash-250715",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "kimi-k2-250711",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-1-6-vision-250815",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-v3-1-250821",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-1-6-flash-250828",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "glm-4-5-air-20250728",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "qwen3-8b-20250429",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "qwen3-32b-20250429",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "qwen2-5-72b-20240919",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedream-4-0-250828",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "kimi-k2-250905",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-translation-250915",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-v3-1-terminus",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-smart-router-250928",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-1-6-251015",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedance-1-0-pro-fast-251015",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-1-6-lite-251015",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed3d-1-0-250928",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "kimi-k2-thinking-251104",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-code-preview-251028",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "qwen3-0-6b-20250429",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "qwen3-14b-20250429",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedream-4-5-251128",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-embedding-vision-251215",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-v3-2-251201",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedance-1-5-pro-251215",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "glm-4-7-251222",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-1-8-251228",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-character-251128",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-2-0-lite-260215",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedance-2-0-260128",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedream-5-0-260128",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-2-0-mini-260215",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-2-0-pro-260215",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedance-2-0-fast-260128",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-2-0-code-preview-260215",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "hyper3d-gen2-260112",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "hitem3d-2-0-251223",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed3d-2-0-260328",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedream-4-0-20260415",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-2-0-mini-260428",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-2-0-lite-260428",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-v4-pro-260425",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-v4-flash-260425",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedance-2-0-mini-260615",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-2-1-pro-260628",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-2-1-turbo-260628",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-character-260628",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-evolving",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "glm-5-2-260617",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedream-5-0-pro-260628",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedance-2-5-260628",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-v4-flash-ga-260731",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-v4-pro-ga-260813",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seed-2-1-lite-260915",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "glm-5-3-flash-260828",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:21.957Z"
+      },
+      {
+        "id": "deepseek-v4-1-flash-260910",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:43:06.460Z"
+      },
+      {
+        "id": "doubao-seed-2-1-pro-260915",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "doubao-seedream-5-0-flash-260915",
+        "keep": false,
+        "unkeptAt": "2026-10-10T14:06:35.635Z"
+      },
+      {
+        "id": "deepseek-v4-1-flash-261017",
+        "keep": false
+      },
+      {
+        "id": "deepseek-v4-1-flash-economy-261017",
+        "keep": false
+      }
+    ]
+  },
+  "aliyun": {
+    "说明": "阿里云 token plan（CN）。★ 档位必须**显式声明**（下面每个模型的 reasoningEfforts）—— 实测过：不声明就会吃 UNSUPPORTED_REASONING_EFFORT，因为 DSH 的判档逻辑里 `max`/`xhigh` 要求 thinkingLevelMap 有映射，而未声明的档位一律被填成 null（= 不支持）。这里的 wire 值是照 DSH 目录 data/qwen-token-plan-cn.json 现读的，不是手抄。off 实测真能关（推理 tok 与思考字数归零）。",
+    "api": "openai-completions",
+    "baseURL": "https://token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1",
+    "apiKeyEnv": "QWEN_TOKEN_PLAN_CN_API_KEY",
+    "envField": "QWEN_TOKEN_PLAN_CN_API_KEY",
+    "compat": {
+      "thinkingFormat": "qwen",
+      "supportsReasoningEffort": true,
+      "supportsDeveloperRole": false
+    },
+    "models": [
+      {
+        "id": "deepseek-v4.1-flash",
+        "name": "DeepSeek V4.1 Flash（阿里 token plan）",
+        "contextWindow": 1000000,
+        "maxTokens": 384000,
+        "input": [
+          "text",
+          "image"
+        ],
+        "reasoningEfforts": {
+          "off": "none",
+          "low": "low",
+          "high": "high",
+          "max": "max"
+        }
+      },
+      {
+        "id": "deepseek-v4-pro",
+        "name": "DeepSeek V4 Pro（阿里 token plan）",
+        "contextWindow": 1000000,
+        "maxTokens": 384000,
+        "input": [
+          "text"
+        ],
+        "reasoningEfforts": {
+          "off": "none",
+          "low": "low",
+          "high": "high",
+          "max": "max"
+        }
+      },
+      {
+        "id": "qwen3.8-max",
+        "name": "Qwen3.8 Max（阿里 token plan）",
+        "contextWindow": 1000000,
+        "maxTokens": 131072,
+        "input": [
+          "text"
+        ],
+        "reasoningEfforts": {
+          "off": "none",
+          "low": "low",
+          "medium": "medium",
+          "xhigh": "xhigh"
+        }
+      },
+      {
+        "id": "qwen3.8-flash",
+        "name": "Qwen3.8 Flash（阿里 token plan）",
+        "contextWindow": 1000000,
+        "maxTokens": 131072,
+        "input": [
+          "text",
+          "image"
+        ],
+        "reasoningEfforts": {
+          "off": "none",
+          "low": "low",
+          "medium": "medium",
+          "xhigh": "xhigh"
+        }
+      }
+    ],
+    "停用": true,
+    "_停用原因": "★2026-10-07 额度用光（用户口径）。钥匙仍在凭据库（cred:QWEN_TOKEN_PLAN_CN_API_KEY），零 token 探测看不出额度 ⇒ 只能显式停用。**去掉本标记即完全恢复**（声明一个字都没动）。"
+  },
+  "SiliconFlow": {
+    "说明": "（由「API 额度」面板添加）",
+    "api": "openai-completions",
+    "baseURL": "https://api.siliconflow.cn/v1",
+    "apiKeyEnv": "SILICONFLOW_API_KEY",
+    "envField": "SILICONFLOW_API_KEY",
+    "models": [
+      {
+        "id": "tencent/Hy4-preview",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "zai-org/GLM-5.3",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "deepseek-ai/DeepSeek-V4-Flash",
+        "keep": true
+      },
+      {
+        "id": "meituan-longcat/LongCat-2.0",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "zai-org/GLM-5.2",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "moonshotai/Kimi-K2.7-Code",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "deepseek-ai/DeepSeek-V4-Pro",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3.8-27B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Pro/moonshotai/Kimi-K2.6",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Pro/zai-org/GLM-5.1",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "XingChenAGI/Xing4.0-29B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Tongyi-MAI/Z-Image-Turbo",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Tongyi-MAI/Z-Image",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "deepseek-ai/DeepSeek-V3.2",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Pro/deepseek-ai/DeepSeek-V3.2",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "deepseek-ai/DeepSeek-V3.1-Terminus",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Pro/deepseek-ai/DeepSeek-V3.1-Terminus",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3.6-35B-A3B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3.6-27B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3.5-122B-A10B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3.5-35B-A3B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3.5-27B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3.5-9B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3.5-4B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-VL-Embedding-8B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-VL-Reranker-8B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "PaddlePaddle/PaddleOCR-VL-1.5",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "deepseek-ai/DeepSeek-R1",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Pro/deepseek-ai/DeepSeek-R1",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "deepseek-ai/DeepSeek-V3",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Pro/deepseek-ai/DeepSeek-V3",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "stepfun-ai/Step-3.5-Flash",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-VL-32B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-VL-32B-Thinking",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-VL-8B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-VL-8B-Thinking",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-VL-30B-A3B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-VL-30B-A3B-Thinking",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-Omni-30B-A3B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-Omni-30B-A3B-Thinking",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-Omni-30B-A3B-Captioner",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "deepseek-ai/DeepSeek-OCR",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "inclusionAI/Ling-flash-2.0",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "inclusionAI/Ling-mini-2.0",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen-Image-Edit-2509",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen-Image-Edit",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen-Image",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "XingChenAGI/XingChenASR-V3.2-Ultra",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "XingChenAGI/XingChenGSR-V1.0",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "XingChenAGI/XingChenASR-Diarize-V3.0",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-ASR-1.7B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "tencent/Hunyuan-MT-7B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "ByteDance-Seed/Seed-OSS-36B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Wan-AI/Wan2.2-I2V-A14B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Wan-AI/Wan2.2-T2V-A14B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "zai-org/GLM-4.5V",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "zai-org/GLM-4.5-Air",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "XingChenAGI/XingChenASR-V3.2",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "tencent/Hunyuan-A13B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-32B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-14B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-8B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-Reranker-8B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-Embedding-8B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-Reranker-4B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-Embedding-4B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-Reranker-0.6B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen3-Embedding-0.6B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "THUDM/GLM-4-32B-0414",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "THUDM/GLM-Z1-9B-0414",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "THUDM/GLM-4-9B-0414",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "fnlp/MOSS-TTSD-v0.5",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "FunAudioLLM/CosyVoice2-0.5B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "FunAudioLLM/SenseVoiceSmall",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "BAAI/bge-m3",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "BAAI/bge-reranker-v2-m3",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Kwai-Kolors/Kolors",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen2.5-72B-Instruct-128K",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen2.5-72B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen2.5-32B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen2.5-14B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Qwen/Qwen2.5-7B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "BAAI/bge-large-en-v1.5",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "BAAI/bge-large-zh-v1.5",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Pro/BAAI/bge-m3",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Pro/Qwen/Qwen2.5-7B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Pro/BAAI/bge-reranker-v2-m3",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "LoRA/Qwen/Qwen2.5-32B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "LoRA/Qwen/Qwen2.5-14B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "LoRA/Qwen/Qwen2.5-72B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "LoRA/Qwen/Qwen2.5-7B-Instruct",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "Kev-4B",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "SemIf",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "diffusiongemma",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:31:45.956Z"
+      },
+      {
+        "id": "zai-org/GLM-5.3-Flash",
+        "keep": true
+      }
+    ]
+  },
+  "xiaomi": {
+    "说明": "（由「API 额度」面板改职位模型时**自动补齐** —— 这家原来只声明在档案里）",
+    "api": "openai-completions",
+    "baseURL": "https://token-plan-cn.xiaomimimo.com/v1",
+    "apiKeyEnv": "XIAOMI_API_KEY",
+    "envField": "XIAOMI_API_KEY",
+    "models": [
+      {
+        "id": "mimo-v2.6-flash"
+      },
+      {
+        "id": "mimo-v2.6-pro"
+      },
+      {
+        "id": "mimo-v2.5",
+        "keep": false
+      },
+      {
+        "id": "mimo-v2.5-asr",
+        "keep": false
+      },
+      {
+        "id": "mimo-v2.5-pro",
+        "keep": false
+      },
+      {
+        "id": "mimo-v2.5-tts",
+        "keep": false
+      },
+      {
+        "id": "mimo-v2.5-tts-voiceclone",
+        "keep": false
+      },
+      {
+        "id": "mimo-v2.5-tts-voicedesign",
+        "keep": false
+      }
+    ],
+    "perCarrier": {
+      "_说明": "同一个家在不同载体上名字/钥匙变量不同。Pi 与 OpenCode 内置两个小米 provider：xiaomi=按量计费口(api.xiaomimimo.com)、xiaomi-token-plan-cn=套餐口(token-plan-cn.xiaomimimo.com)；我们的钥匙是套餐的，所以这两个载体必须用 token-plan 名 + XIAOMI_TOKEN_PLAN_CN_API_KEY。DSH(messenger/researcher) 档案里的 xiaomi 本身就是套餐口，故不列在此、保持原名 xiaomi + XIAOMI_API_KEY。",
+      "pi": {
+        "name": "xiaomi-token-plan-cn",
+        "keyEnv": "XIAOMI_TOKEN_PLAN_CN_API_KEY"
+      },
+      "opencode": {
+        "name": "xiaomi-token-plan-cn",
+        "keyEnv": "XIAOMI_TOKEN_PLAN_CN_API_KEY"
+      }
+    }
+  },
+  "ocgo": {
+    "说明": "（由「API 额度」面板添加）",
+    "api": "openai-completions",
+    "baseURL": "https://opencode.ai/zen/go/v1",
+    "apiKeyEnv": "OCGO_API_KEY",
+    "envField": "OCGO_API_KEY",
+    "headers": {
+      "x-opencode-session": "${session}"
+    },
+    "headers说明": "★ 2026-10-12 实测：这家网关**要求推理请求带 `x-opencode-session`**（值必须 ASCII）——没有它 `/models` 照样 200，但 `POST /chat/completions` 回 400 `MissingSessionID`。这个字段会一路带到：额度检测的真调用、调研员生成给 DSH 的配置（`coder-b-dsh.mjs`）、OpenCode 的 provider options。",
+    "models": [
+      {
+        "id": "deepseek-v4-flash",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:08.001Z"
+      },
+      {
+        "id": "deepseek-v4-flash-vision-exp",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:08.457Z"
+      },
+      {
+        "id": "deepseek-flash",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:09.273Z"
+      },
+      {
+        "id": "deepseek-v4.1-flash",
+        "keep": true,
+        "reasoningEfforts": {
+          "low": "low",
+          "high": "high",
+          "max": "max"
+        }
+      },
+      {
+        "id": "deepseek-v4-pro",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:11.224Z"
+      },
+      {
+        "id": "glm-5.1",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:11.721Z"
+      },
+      {
+        "id": "glm-5.2",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:12.217Z"
+      },
+      {
+        "id": "glm-5.3",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:14.072Z"
+      },
+      {
+        "id": "grok-4.6",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:14.433Z"
+      },
+      {
+        "id": "grok-4.7",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:14.738Z"
+      },
+      {
+        "id": "muse-spark-1.2-contributor",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:48.504Z"
+      },
+      {
+        "id": "muse-spark-1.3-contributor",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:46.825Z"
+      },
+      {
+        "id": "glm-5.3-flash",
+        "keep": true
+      },
+      {
+        "id": "omen-alpha",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:33.009Z"
+      },
+      {
+        "id": "gpt-5.6-luna",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:32.481Z"
+      },
+      {
+        "id": "gpt-6-luna",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:20.096Z"
+      },
+      {
+        "id": "claude-haiku-5-5",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:18.897Z"
+      },
+      {
+        "id": "hy3",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:17.818Z"
+      },
+      {
+        "id": "hy4-preview",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:16.329Z"
+      },
+      {
+        "id": "kimi-k2.6",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:15.720Z"
+      },
+      {
+        "id": "kimi-k2.7-code",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:28.913Z"
+      },
+      {
+        "id": "kimi-k3",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:30.521Z"
+      },
+      {
+        "id": "mimo-v2.5",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:30.913Z"
+      },
+      {
+        "id": "mimo-v2.6-flash",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:31.273Z"
+      },
+      {
+        "id": "mimo-v2.5-pro",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:31.609Z"
+      },
+      {
+        "id": "mimo-v2.6-pro",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:31.904Z"
+      },
+      {
+        "id": "minimax-m2.5",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:25.408Z"
+      },
+      {
+        "id": "minimax-m2.7",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:19.672Z"
+      },
+      {
+        "id": "minimax-m3",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:18.577Z"
+      },
+      {
+        "id": "space-bunny",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:17.433Z"
+      },
+      {
+        "id": "longcat-2.0",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:16.841Z"
+      },
+      {
+        "id": "longcat-2.5-preview-free",
+        "keep": true
+      },
+      {
+        "id": "step-5-preview-free",
+        "keep": true
+      },
+      {
+        "id": "qwen3.6-plus",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:23.185Z"
+      },
+      {
+        "id": "qwen3.7-max",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:22.817Z"
+      },
+      {
+        "id": "qwen3.8-max",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:22.473Z"
+      },
+      {
+        "id": "qwen3.8-flash",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:22.089Z"
+      },
+      {
+        "id": "qwen3.7-plus",
+        "keep": false,
+        "unkeptAt": "2026-10-10T15:37:21.776Z"
+      }
+    ]
+  },
+  "u2": {
+    "说明": "（由「获取模型」补建 —— 原来只声明在档案里）",
+    "api": "openai-completions",
+    "baseURL": "https://maas-api.unisound.com/v1",
+    "apiKeyEnv": "U2_API_KEY",
+    "envField": "U2_API_KEY",
+    "models": [
+      {
+        "id": "glm-5.2",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:59.808Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "qwen3.8-max",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:27.944Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "kimi-k3",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:28.809Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "deepseek-v4-flash-0731",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:29.681Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "u2",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:49.544Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "u2-med",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:48.632Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "kimi-k2.5",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:32.888Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "kimi-k2.6",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:33.704Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "glm-5.1",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:35.224Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "glm-5",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:35.928Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "MiniMax-M2.5",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:36.856Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "qwen3.6-35b-a3b",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:37.680Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "qwen3.7-plus",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:46.632Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "qwen3.6-plus",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:45.928Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "qwen3.6-flash",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:45.185Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "qwen3.7-max",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:44.240Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "deepseek-v4-pro",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:43.632Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "u2-flash",
+        "keep": true
+      },
+      {
+        "id": "glm-5.3-flash",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:42.736Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "MiniMax-M3",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:40.945Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "qwen3.8-flash",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:40.040Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "glm-5.3",
+        "removed": true,
+        "removedAt": "2026-10-10T13:50:39.072Z",
+        "keep": false,
+        "unkeptAt": "2026-10-10T13:58:46.829Z"
+      }
+    ]
+  }
+}

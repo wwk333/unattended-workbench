@@ -1,0 +1,181 @@
+# =============================================================================
+#  「无人值守」preset —— **草稿**（第 3 步的产出物，尚未安装）
+#
+#  这个文件**不在**任何 profile 里，它的存在是为了：
+#    ① 把「无人值守」模式要什么固化成一份可审的清单；
+#    ② 用已验证的预检办法先验合成：--profile web --dump-config --patch <本文件>
+#       （desktop profile 被 Electron 独占，不能直接 dump；web 是 0.2.0 发运基线，
+#         desktop 的 bundle 集 = base + web-app + voice-input，所以按 web 基线预检足够）
+#    ③ 真安装时只需两步：把本文件内容追加进 profiles\desktop\cordis.patch.yml，
+#       再"真启动桌面端 + 新开一个空白会话"验收（§15.1 防线 6）。
+#
+#  ⚠️ 计划里的关键纪律（这一条决定"装坏了也是可回滚的"）：
+#     **不改 default / selectedDefault** —— 新模式只是 chip 里多一个可选项，
+#     默认仍然是 standard。这样即使新模式有问题，standard 照样能起（防线 1）。
+#
+#  与发运件 standard 的关系：本 preset **以 standard 为骨架**（工具面基本一致），
+#  差异集中在三处（见下方"与 standard 的差异"）。
+# =============================================================================
+
+- insert:
+    - id: preset-unattended
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: unattended
+        name: 无人值守
+        order: 5            # standard=1、minimal=3 → 排在它们后面（chip 里的次序）
+
+        # ---------------------------------------------------------------------
+        # persona：规则唯一来源
+        #   工作台的规则本来就是文件（roles\*.md），这里直接读它，**不复制内容**，
+        #   所以"规则只有一份"，改文件即改规则。
+        #   实测：!!js 表达式在 patch 层是支持的（发运件里 used 于 disabled 判断）。
+        # ---------------------------------------------------------------------
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: !!js require('fs').readFileSync('D:/无人值守/_unattended/roles/brain.md', 'utf8')
+              # ⚠️ 2026-10-19 b184：**这里不许再写 `Your working directory is {{cwd}}.`**
+              #    0.2.1 起宿主只注册 provider / model，`{{cwd}}` 会让**提示词组装直接抛错**
+              #    （unknown prompt variable …），会话在发出任何模型请求之前就失败
+              #    —— 2026-10-18 23:45 的「本轮运行失败」就是这一句。工作目录由宿主的
+              #    working-directory 服务以**不做插值**的用户上下文提供，不需要在这里重复。
+              suffix: |
+                【无人值守模式的硬要求】
+                1. 派活给班组（Qoder CLI）之前，必须先跑 账号自检.mjs；不通过就停手告警。
+                2. 每张任务卡必须带"相关坑"段落（用 派活.mjs 生成，它会自动内嵌坑原文）。
+                3. coder 开工前必须先回报"读坑三句话"，不回不动工。
+                4. 审核员复核时多问一句："这次有没有再犯库里记过的同类坑？"
+                5. 本波次踩到的新坑，在本波次结束前由我提炼后落库（<知识库>\\坑）。
+                6. 施工类操作在会话里逐步报一行；阶段报告才推手机（Bark），电脑上不弹。
+
+          # --- 项目规则与计划（与 standard 一致）-----------------------------
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+
+          - id: planning
+            name: cordis:group
+            group: true
+            isolate:
+              planMode: true
+            config:
+              - id: plan-mode
+                name: '@deepseek-ai/dsh-plan-mode'
+
+          # --- 执行面（Windows 上 pwsh 开、bash 关，与 standard 一致）--------
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-pwsh
+            name: '@deepseek-ai/dsh-tool-pwsh'
+            disabled: !!js process.platform !== 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-jobs
+            name: '@deepseek-ai/dsh-tool-jobs'
+
+          # --- 技能与交付（技能目录指向工作台 SOP\skills，**需实测**，见方案 §4.7）---
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+            config:
+              customSkillDirs:
+                - 'D:/obsidian/知识库/AI知识库/人机协作SOP-唯一源/skills'
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: present
+            name: '@deepseek-ai/dsh-tool-present'
+
+          # --- 循环：目标（无人值守的骨架，与 standard 一致）-----------------
+          - id: command-goal
+            name: '@deepseek-ai/dsh-command-goal'
+          - id: tool-goal
+            name: '@deepseek-ai/dsh-tool-goal'
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+
+          # --- 压缩（长跑必需，与 standard 一致）-----------------------------
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 8192
+                  headChars: 4096
+                  tailChars: 1024
+
+          # --- 编排与协同（与 standard 一致；不开 Agent Teams，见方案 §13.1）--
+          - id: delegation
+            name: cordis:group
+            group: true
+            isolate:
+              workflowEngine: true
+            config:
+              - id: tool-subagent-control
+                name: '@deepseek-ai/dsh-tool-subagent-control'
+              - id: tool-subagent-list-agents
+                name: '@deepseek-ai/dsh-tool-subagent-control/list-agents'
+              - id: tool-subagent
+                name: '@deepseek-ai/dsh-tool-subagent'
+                config:
+                  provider: spawn
+                  toolName: subagent
+                  modelSelectionSettings: true
+                  backgroundMode: continuable
+              - id: tool-subagent-fork
+                name: '@deepseek-ai/dsh-tool-subagent'
+                config:
+                  provider: fork
+                  toolName: subagent_fork
+                  backgroundMode: continuable
+              - id: workflow-ptc
+                name: '@deepseek-ai/dsh-workflow-ptc'
+                config:
+                  provider: spawn
+              - id: tool-workflow
+                name: '@deepseek-ai/dsh-tool-workflow'
+
+          # --- 外部：调研与拍板（与 standard 一致）---------------------------
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+          - id: tool-web
+            name: '@deepseek-ai/dsh-tool-web'
+            config:
+              fetch: true
+              searchTimeoutMs: 60000
+
+          # -------------------------------------------------------------------
+          # 与 standard 的**差异 3**：Obsidian 知识库工具（12 个 obsidian_*）
+          #
+          # ⚠️ 这里**故意注释掉** —— 两个原因，都必须先解决才能打开：
+          #   ① 包必须装进 **desktop profile 自己的 node_modules**
+          #      （实测：插件按"正在启动的 profile 目录"解析模块；
+          #        `createRequire(profiles/desktop/package.json)` 现在解析不到它）。
+          #      → 安装 = `plugin --profile desktop add dsh-obsidian@0.2.6`（第 3 步做，先备份）
+          #   ② 装完必须真启动桌面端验证，再新开一个空白会话确认工具真的挂上。
+          #
+          # 取消注释即启用（配置点与 safe profile 保持一致：vaultPath 必须显式写）：
+          # - id: obsidian
+          #   name: dsh-obsidian
+          #   config:
+          #     vaultPath: '<知识库>\\坑'
+          #     vaultWorkspaceOnly: false     # 必须 false：我们的工作目录在工作台，不在库内
+          #     useCli: false
+          # -------------------------------------------------------------------

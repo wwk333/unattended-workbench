@@ -1,0 +1,14 @@
+# 统一换行，避免 Windows 上用 CRLF、别人拉下来变 LF 造成"整文件改动"
+* text=auto eol=lf
+
+# 这几个必须保持 CRLF（Windows 批处理/快捷方式脚本对换行敏感）
+*.cmd  text eol=crlf
+*.bat  text eol=crlf
+*.ps1  text eol=crlf
+
+# 二进制，别当文本比
+*.exe  binary
+*.ico  binary
+*.png  binary
+*.jpg  binary
+*.zip  binary

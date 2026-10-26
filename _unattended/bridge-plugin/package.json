@@ -1,0 +1,23 @@
+{
+  "name": "dsh-crew-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "班组换会话桥 ＋ 看护拉手（仅 host 半，无界面）：把原 dsh-board-sidebar 里的 19390 桥与「确保看守」拉手搬出来，替换会话仍可用。",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "*"
+  },
+  "license": "MIT"
+}
