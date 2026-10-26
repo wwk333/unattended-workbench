@@ -204,12 +204,12 @@ export const CHECKS = [
     }
   }),
 
-  // ⑥ 技能（策划 / 项目解剖）：包里是**模板**，装到 ~/.dsh/skills 之前渲染一次
-  item('skills', '技能（策划 / 项目解剖）已装到 ~/.dsh/skills', {
+  // ⑥ 技能（策划）：包里是**模板**，装到 ~/.dsh/skills 之前渲染一次
+  item('skills', '策划技能已装到 ~/.dsh/skills', {
     check: () => {
       const dest = DSH_HOME ? join(DSH_HOME, 'skills') : null
       if (!dest) return { ok: false, detail: 'DSH 家目录没解析出来（先装 DSH 并登录一次）' }
-      const need = ['idea-to-plan', 'project-anatomy']
+      const need = ['idea-to-plan']
       const missing = need.filter(n => !existsSync(join(dest, n, 'SKILL.md')))
       return missing.length
         ? { ok: false, detail: `缺 ${missing.join('、')}（共 ${dest}）` }
