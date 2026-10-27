@@ -1,0 +1,49 @@
+name: CI
+
+# 为什么要有它：没有 CI 时，"这个 PR 会不会把测试搞红"只能靠维护者在自己机器上手工跑，
+# 于是没人敢合别人的代码，也没人愿意提 —— 这是开源项目"只能自己维护"的最主要原因。
+# 430 多条用例 + 43 个测试文件，机器几分钟就能全跑完，没必要让人肉跑。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    # 全部脚本都是 Windows 取向（PowerShell、DSH 桌面端、盘符路径），必须用 Windows runner。
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 取代码
+        uses: actions/checkout@v4
+
+      - name: 装 Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: 环境自证（版本、平台上能看见什么）
+        shell: pwsh
+        run: |
+          node --version
+          $PSVersionTable.PSVersion.ToString()
+          # 本项目零第三方依赖（纯 ESM + node: 内置），所以没有 npm ci 这一步
+
+      - name: 跑全量测试
+        shell: pwsh
+        run: node tests/跑测试.mjs --out ci-evidence --tag ci
+
+      - name: 上传证据（成功也传，便于比对）
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-evidence
+          path: ci-evidence
+          if-no-files-found: warn
+          retention-days: 14
