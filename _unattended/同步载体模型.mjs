@@ -581,9 +581,15 @@ export function ownEntries (carrier) {
       const out = []
       for (const [home, arr] of Object.entries(cfg?.modelProviders ?? {})) {
         for (const m of (arr ?? [])) {
-          const bare = String(m?.id ?? '')
-          if (!bare) continue
-          out.push({ bare, canon: home, baseUrl: m.baseUrl ?? null, sel: home + '/' + bare })
+          // ★W11（方案 B）：条目 id **本身就是全项目统一的 `家/模型`**（同步器这么写的），
+          //   所以这里**不能再叠一层前缀** —— 否则面板下拉会变成 `ocgo/ocgo/deepseek-v4.1-flash`，
+          //   选了写进 agents.json、派活时载体查不到这个 id（真踩过）。
+          //   `bare` 一律是**真模型名**（给显示/比对用），`sel` 一律是**载体真认的那个 id**。
+          const id = String(m?.id ?? '')
+          if (!id) continue
+          const prefixed = id.startsWith(home + '/')
+          const bare = prefixed ? id.slice(home.length + 1) : id
+          out.push({ bare, canon: home, baseUrl: m.baseUrl ?? null, sel: prefixed ? id : (home + '/' + bare) })
         }
       }
       return out

@@ -295,6 +295,15 @@ export function checkModel (agentId, model) {
   // prefixed：**前缀是硬的、名字是软的**（只有 kimi-k3 实测过 ⇒ 不在基表里只警告，不硬拦）
   if (cap.mode === 'prefixed') {
     if (!s.startsWith(cap.prefix)) return { ok: false, why: `${cap.how} ⇒ 必须写成「${cap.prefix}<火山模型名>」；「${s}」缺前缀，它不会认` }
+    // ★W11：载体自己的清单里如果带了 `sel`（全项目统一的 `家/模型`），就**按 sel 核** ——
+    //   否则会拿"前缀 + 裸名"去和"已经带前缀的 id"比，永远对不上，报假警报。
+    const known = (cap.entries ?? []).map((e) => e.sel).filter(Boolean)
+    if (known.length) {
+      if (!known.includes(s)) {
+        return { ok: true, warn: `⚠️ 「${s}」不在载体自己的清单里（${known.slice(0, 6).join('、')}${known.length > 6 ? '…' : ''}）—— 去 ② 勾上再同步一次` }
+      }
+      return { ok: true }
+    }
     const bare = s.slice(cap.prefix.length)
     if (cap.base && cap.base.length && !cap.base.includes(bare)) {
       return { ok: true, warn: `⚠️ 「${bare}」不在火山（ark）声明的模型清单里（${cap.base.join('、')}）—— **未实测**，能不能跑得你自己确认` }
