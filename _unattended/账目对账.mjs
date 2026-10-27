@@ -102,6 +102,12 @@ const readJson = (p) => existsSync(p) ? JSON.parse(readFileSync(p, 'utf8').repla
 // ── C1/C2：让快照脚本现算一份，与线上那份比；并检查"只有外部载体"
 const tmpDir = mkdtempSync(join(tmpdir(), 'acct-'))
 const tmpOut = join(tmpDir, 'external_usage.recompute.json')
+// ★W12c（2026-10-27）：**对账不能被"活的账本"误伤**。
+//   实测：起飞前检查跑 ⑤ 之前刚做了角色自检（真调用 ⇒ 我们账本新增一条），
+//   于是"现算的快照"和"线上快照"必然对不上 ⇒ C1/C2/C2b 全红 ⇒ 挡起飞。
+//   这不是账错了，是**在拿移动的靶子做断言**。做法：记下前后指纹，期间被写过就说明本次不作数。
+const _ourSha0 = existsSync(OUR_LEDGER) ? createHash('sha256').update(readFileSync(OUR_LEDGER)).digest('hex') : null
+const _snapSha0 = existsSync(SNAPSHOT) ? createHash('sha256').update(readFileSync(SNAPSHOT)).digest('hex') : null
 const r = spawnSync(process.execPath, [SNAP_SCRIPT, '--ledger', OUR_LEDGER, '--out', tmpOut, '--write'],
   { encoding: 'utf8', maxBuffer: 8 << 20, windowsHide: true })
 const recomputed = r.status === 0 ? readJson(tmpOut) : null
@@ -184,6 +190,22 @@ if (liveText) {
 }
 
 rmSync(tmpDir, { recursive: true, force: true })
+
+// ★W12c：期间账本或快照被写过 ⇒ 拿移动的靶子比出来的差异不算错，降级为警告
+{
+  const ourSha1 = existsSync(OUR_LEDGER) ? createHash('sha256').update(readFileSync(OUR_LEDGER)).digest('hex') : null
+  const snapSha1 = existsSync(SNAPSHOT) ? createHash('sha256').update(readFileSync(SNAPSHOT)).digest('hex') : null
+  const raced = (ourSha1 !== _ourSha0) || (snapSha1 !== _snapSha0)
+  if (raced) {
+    for (const x of results) {
+      if (!x.ok && x.level === 'error' && /^C(1|2|2b)\b/.test(x.id)) {
+        x.level = 'warn'
+        x.detail = '（检查期间账本/快照被写入 ⇒ 本次对账不作数，稍后重跑；不是账错了）' + x.detail
+      }
+    }
+    results.push({ level: 'warn', id: 'C0 对账期间账本没被写', ok: false, detail: '期间被写过 —— 本次以"不作数"处理（并发写正常）' })
+  }
+}
 
 const errors = results.filter(x => x.level === 'error' && !x.ok)
 const warns = results.filter(x => x.level === 'warn' && !x.ok)

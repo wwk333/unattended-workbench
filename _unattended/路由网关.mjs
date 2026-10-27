@@ -150,6 +150,7 @@ const server = createServer(async (req, res) => {
     //   对话请求体都很小，缓冲无影响；**响应仍然流式透传**（SSE 不受影响）。
     let body = (req.method === 'GET' || req.method === 'HEAD') ? undefined : req
     let stripped = null
+    let schemaFilled = 0
     if (body) {
       const chunks = []
       for await (const c of req) chunks.push(c)
@@ -158,11 +159,28 @@ const server = createServer(async (req, res) => {
       if (isJson && buf.length) {
         try {
           const j = JSON.parse(buf.toString('utf8'))
+          let touched = false
           if (typeof j?.model === 'string' && j.model.startsWith(home + '/')) {
             stripped = { from: j.model, to: j.model.slice(home.length + 1) }
             j.model = stripped.to
-            body = Buffer.from(JSON.stringify(j), 'utf8')
-          } else body = buf
+            touched = true
+          }
+          // ★W12b：**补全不合法的 function schema**。
+          //   实测：Qwen Code 0.25 内置的 `get_goal` / `list_agents` 两个工具**不带 parameters**，
+          //   而 OpenAI 规范里 function.parameters 是必填。同一个请求体在 ocgo 上**一会儿 200、一会儿 400**
+          //   （报 `missing field parameters at line 1 column ~63895`）—— 上游多副本严格程度不一致。
+          //   补 `{type:'object', properties:{}}` 在语义上就是"这个工具不需要参数"，对合规请求体是**无操作**。
+          if (Array.isArray(j?.tools)) {
+            for (const t of j.tools) {
+              const fn = t && (t.function ?? t)
+              if (fn && typeof fn === 'object' && fn.name && !('parameters' in fn)) {
+                fn.parameters = { type: 'object', properties: {} }
+                schemaFilled++
+                touched = true
+              }
+            }
+          }
+          body = touched ? Buffer.from(JSON.stringify(j), 'utf8') : buf
         } catch { body = buf }
       } else body = buf
     }
@@ -185,7 +203,7 @@ const server = createServer(async (req, res) => {
     for await (const chunk of up.body) { bytes += chunk.length; if (!res.write(chunk)) await new Promise((r) => res.once('drain', r)) }
     res.end()
     hits[home] = (hits[home] ?? 0) + 1
-    logline([new Date().toISOString(), 'OK', home, req.method, url.pathname, up.status, (Date.now() - started) + 'ms', bytes + 'B'].join('\t'))
+    logline([new Date().toISOString(), 'OK', home, req.method, url.pathname, up.status, (Date.now() - started) + 'ms', bytes + 'B', [stripped ? ('model:' + stripped.from + '→' + stripped.to) : '', schemaFilled ? ('schema+' + schemaFilled) : ''].filter(Boolean).join(' ')].join('\t'))
   } catch (e) {
     if (!res.headersSent) { res.writeHead(502, { 'content-type': 'application/json; charset=utf-8' }); res.end(JSON.stringify({ ok: false, error: '网关转发失败：' + String(e?.message ?? e), home })) }
     logline([new Date().toISOString(), 'FAIL', home, req.method, url.pathname, String(e?.message ?? e).slice(0, 120), (Date.now() - started) + 'ms'].join('\t'))
