@@ -233,9 +233,9 @@ export const CHECKS = [
       let j = null
       try { j = JSON.parse(String(r.stdout ?? '')) } catch {}
       if (!j) return { ok: false, detail: '查不到（schtasks 不可用，或这台机器不是 Windows）' }
-      return j.exists
-        ? { ok: true, detail: `在册：${j.name}` }
-        : { ok: false, detail: '还没建（看板/看护死了没人拉起来）' }
+      if (!j.exists) return { ok: false, detail: '还没建（看板/看护死了没人拉起来）' }
+      if (j.enabled === false) return { ok: false, detail: `在册但被**禁用**了：${j.name}（存在不等于会跑）` }
+      return { ok: true, detail: `在册且启用：${j.name}` }
     },
     hint: '看护循环自己也会死，而"发现它死了"的角色就是它自己 —— 只能靠系统级定时器兜底。不装也能手动跑，但就不叫"无人值守"了。',
     fix: () => {

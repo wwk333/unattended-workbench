@@ -86,6 +86,8 @@ export const ALLOW = Object.freeze([
   'uninstall.mjs',
   'uninstall.mjs',
   'gate.json',
+  // ⚠️ `更新-DSH.md` 与 `回滚-DSH.ps1` **故意不发**：里面的备份路径是本机值。
+  //    真要让用户也有它们，得先把路径参数化 + 走渲染（和 roles 同一套），别直接塞进来。
   // 技能（策划 / 项目解剖）：包里是**模板**，安装时由 `_安装技能.mjs` 渲染到 ~/.dsh/skills
   'skills/**/*.md',
   'skills/**/*.mjs',

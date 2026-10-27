@@ -79,7 +79,21 @@ function runSchtasks (args) {
 export function status () {
   const r = runSchtasks(buildQueryArgs())
   const parsed = parseQuery(`${r.stdout}\n${r.stderr}`)
-  return { ...parsed, exitCode: r.status, name: TASK_NAME }
+  // ★W9：**"存在"不等于"在跑"** —— 任务被 Disabled 时 schtasks /Query 照样成功返回，
+  //   只看 exists 会把它当成健康（实测：更新脚本临时禁用它，setup 仍报 ✅）。
+  // ⚠️ `/Query` 默认是**表格**输出，里面根本没有 Status 字段 —— 必须再来一次 LIST。
+  //   （第一版就栽在这：正则永远匹配不到，Disabled 也被当成 enabled=true）
+  // ⚠️ 不能用 `/FO LIST` 的文本判 —— 中文系统输出的是"模式: 已禁用"，
+  //   英文正则永远匹配不到（实测踩过：Disabled 被当 enabled=true）。
+  //   `/XML` 是**语言无关**的：<Enabled>false</Enabled> 才是禁用的权威说法。
+  let enabled = true
+  if (parsed.exists) {
+    const x = runSchtasks(['/Query', '/TN', TASK_NAME, '/XML'])
+    const m = String(x.stdout ?? '').match(/<Enabled>\s*(true|false)\s*<\/Enabled>/i)
+    // 没有 <Enabled> 节点 = 默认启用（Task Scheduler 对 true 会省略）
+    if (m) enabled = m[1].toLowerCase() === 'true'
+  }
+  return { ...parsed, enabled, exitCode: r.status, name: TASK_NAME }
 }
 
 export function install (opts = {}) {
@@ -103,16 +117,21 @@ export function uninstall () {
 /** 启动自检用：没有计划任务 ⇒ **红灯**，不许假装绿（§七 断点表现） */
 export function selfCheck () {
   const s = status()
+  // 三种状态，别混：不存在 / 存在但被禁用 / 正常
+  const state = !s.exists ? 'red' : (s.enabled === false ? 'red' : 'ok')
   return {
     schema: 1,
     kind: 'scheduler-check',
     at: new Date().toISOString(),
     source: '计划任务.mjs',
-    state: s.exists ? 'ok' : 'red',
+    state,
     stale: false,
     name: TASK_NAME,
     exists: s.exists,
-    why: s.exists ? null : `计划任务 ${TASK_NAME} 不存在 ⇒ 看护循环死了没人补（启动自检红灯）`
+    enabled: s.enabled !== false,
+    why: !s.exists
+      ? `计划任务 ${TASK_NAME} 不存在 ⇒ 看护循环死了没人补（启动自检红灯）`
+      : (s.enabled === false ? `计划任务 ${TASK_NAME} 被**禁用**了 ⇒ 存在但不会跑，等于没有` : null)
   }
 }
 
@@ -120,7 +139,7 @@ const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(fileURLTo
 if (isMain) {
   const a = process.argv.slice(2)
   const has = (n) => a.includes('--' + n)
-  if (has('status')) { console.log(JSON.stringify(selfCheck(), null, 2)); process.exit(selfCheck().exists ? 0 : 1) }
+  if (has('status')) { const s = selfCheck(); console.log(JSON.stringify(s, null, 2)); process.exit(s.state === 'ok' ? 0 : 1) }
   if (has('install')) { const r = install(); process.exit(r.ok ? 0 : 1) }
   if (has('uninstall')) { const r = uninstall(); process.exit(r.ok ? 0 : 1) }
   console.log('用法：计划任务.mjs --status | --install | --uninstall')

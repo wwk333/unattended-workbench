@@ -500,10 +500,15 @@ export function resolveRole (roleName, cfg, opts = {}) {
         if (p.idx > 0) {
           // ★ 2026-10-07：跳板可能**没有 provider**（载体自有订阅：Qoder / CodeBuddy）⇒ 用**裸模型名**，
           //   **绝不拿 null 拼前缀**（那会写出 `null/Qwen3.8-Flash` 这种废字符串）。
-          const to = p.provider ? (carrierName(p.provider) + '/' + p.model) : p.model
+          // ★W10：**先归一，再换算** —— 兜底引擎给出的家里可能用的是**另一套命名空间**的名字
+          //   （例：DSH 档案把 opencode.ai 这家叫 `opencode-go`，而我们和 pi/opencode 的配置里都叫 `ocgo`）。
+          //   原来直接把 p.provider 丢给 carrierName() ⇒ 查不到 perCarrier ⇒ 原样输出 ⇒
+          //   拼出 `opencode-go/deepseek-v4.1-flash` ⇒ 载体说"没这个家" ⇒ 1.1 秒空退。
+          const provName = p.provider ? carrierName(canonOfCarrierName(p.provider, agentName, { routing })) : null
+          const to = provName ? (provName + '/' + p.model) : p.model
           // ★ 2026-10-07：**调研员（DSH headless）吃 `--route`** —— 换家时 `route` 必须跟着走，
           //   否则会拿"旧家的 route + 新家的模型"去跑（`coder-b-dsh.mjs` 会 UNKNOWN_MODEL）。
-          if (agentName === 'messenger' && p.provider) roleRoute = p.provider
+          if (agentName === 'messenger' && p.provider) roleRoute = canonOfCarrierName(p.provider, agentName, { routing })
           if (to !== model) failover = { provider: p.provider, from: model, to, why: p.why, keySource: p.keySource, at: new Date().toISOString() }
           model = to
           effort = p.effort ?? effort

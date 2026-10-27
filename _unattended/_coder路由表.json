@@ -53,7 +53,8 @@
           "high": "high",
           "max": "max"
         },
-        "keep": true
+        "keep": false,
+        "keep注": "取消勾选：deepseek-v4.1-flash 由 ocgo 独占"
       },
       {
         "id": "deepseek-v4-pro",
@@ -812,7 +813,9 @@
           "low": "low",
           "high": "high",
           "max": "max"
-        }
+        },
+        "keep": false,
+        "keep注": "取消勾选：deepseek-v4.1-flash 由 ocgo 独占"
       },
       {
         "id": "deepseek-v4-pro",
@@ -1444,7 +1447,8 @@
           "low": "low",
           "high": "high",
           "max": "max"
-        }
+        },
+        "keep注": "唯一勾选：其它家同名会让裸名有歧义"
       },
       {
         "id": "deepseek-v4-pro",
@@ -1613,7 +1617,30 @@
         "keep": false,
         "unkeptAt": "2026-10-10T15:37:21.776Z"
       }
-    ]
+    ],
+    "perCarrier": {
+      "_说明": "★W10：`同步载体模型.mjs` 是按路由表的**键名**写进各载体配置的（pi 的 models.json、qwencode 的 settings.json…），所以运行侧拼命令时也必须用同一个名字。不写这段会回落到 DSH 档案里的 `opencode-go` ⇒ 载体说\"没有这个家\" ⇒ 1.1 秒空退。",
+      "pi": {
+        "name": "ocgo"
+      },
+      "opencode": {
+        "name": "ocgo"
+      },
+      "qwencode": {
+        "name": "ocgo"
+      },
+      "codebuddy": {
+        "name": "ocgo"
+      },
+      "messenger": {
+        "name": "ocgo"
+      }
+    },
+    "alias": [
+      "ocgo",
+      "opencode-go"
+    ],
+    "alias注": "★W10：同一个网关两套名字（我们叫 ocgo，DSH 档案叫 opencode-go）。不写这条，额度兜底会选出一个 pi/opencode 都不认识的家名，导致 1.1 秒空退。"
   },
   "u2": {
     "说明": "（由「获取模型」补建 —— 原来只声明在档案里）",
@@ -1772,6 +1799,22 @@
         "removedAt": "2026-10-10T13:50:39.072Z",
         "keep": false,
         "unkeptAt": "2026-10-10T13:58:46.829Z"
+      },
+      {
+        "id": "deepseek-v4.1-flash",
+        "name": "DeepSeek V4.1 Flash",
+        "contextWindow": 131072,
+        "maxTokens": 8192,
+        "input": [
+          "text"
+        ],
+        "reasoningEfforts": [
+          "low",
+          "high",
+          "max"
+        ],
+        "keep": false,
+        "keep注": "取消勾选：deepseek-v4.1-flash 由 ocgo 独占"
       }
     ]
   }

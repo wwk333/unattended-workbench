@@ -90,6 +90,10 @@ export function canonOfCarrierName (name, agentName = null, options = {}) {
   if (!s) return s
   const raw = routingTable()
   if (raw[s]) return s
+  // ★W10：**先查原表的 alias** —— 合并视图（options.routing）是白名单挑字段的，
+  //   而且很多调用方根本不传它（运行侧拼命令时就没传）⇒ 只查合并视图＝这条规则形同虚设。
+  const byRawAlias = Object.entries(raw).find(([, v]) => Array.isArray(v?.alias) && v.alias.includes(s))
+  if (byRawAlias) return byRawAlias[0]
   const rt = options.routing ?? {}
   const byAlias = Object.entries(rt).find(([, v]) => Array.isArray(v?.alias) && v.alias.includes(s))
   if (byAlias) return byAlias[0]
