@@ -75,8 +75,6 @@
         "openai"
       ],
       "modelFlag": "--model",
-      "modelArgBare": true,
-      "modelArgBare注": "★ 2026-10-13（b72）：**这个载体的 `--model` 只吃裸模型名** —— 它走 `settings.json` 的 `modelProviders`（家即 provider 段），模型名一律裸写 ⇒ 收到 `家/模型` 时要**剥掉 `家/`**。以前这段是按载体名写死的（只认 qwencode），现改成**数据驱动**（同一件事两个载体，别再各写一遍）。",
       "sessionFlag": "--resume",
       "env": {
         "OPENAI_BASE_URL": "https://ark.cn-beijing.volces.com/api/coding/v3",

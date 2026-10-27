@@ -123,7 +123,15 @@ export function chainFor (role, struct = loadStruct(), routing = discoverProvide
 
 /** 这家"现在能不能用"：按探测结果判；**没数据 = 未知（不跳过）**。 */
 function providerUsable (provider, state, struct, secrets, routing) {
-  const rows = state.providers?.[provider] ?? []
+  // ★W12（2026-10-27）：**探测结果有保质期** —— 实测踩到：4 天前的 `ark: ok` 被当今天的结论，
+  //   而 ark 早已额度耗尽 ⇒ 兜底把 coder-a 送到一个死掉的家，报"额度用完"，
+  //   看起来像"配置写 ocgo、实际却打 ark"。超过 TTL 的记录一律当**没数据**（未知 ≠ 不可用）。
+  const TTL_MS = 6 * 60 * 60 * 1000
+  const fresh = (r) => {
+    const t = Date.parse(String(r?.at ?? ''))
+    return Number.isFinite(t) ? (Date.now() - t) <= TTL_MS : false   // 没时间戳 = 无法证明新鲜 ⇒ 不算数
+  }
+  const rows = (state.providers?.[provider] ?? []).filter(fresh)
   if (!rows.length) return { usable: true, why: '未探测（未知 ≠ 不可用）' }
   // ★ 2026-10-07：**真调用判据优先** —— `/models` 判 ok 但真调用红（real 字段）也按不可用算（口径见 额度检测.mjs）。
   const good = rows.filter(r => (r.verdict === 'ok' || r.verdict === 'no-probe' || r.verdict === 'network' || r.verdict === 'missing') && !(r.real && r.real !== 'ok' && r.real !== 'network'))
@@ -146,7 +154,15 @@ export function pick (role, { struct = loadStruct(), routing = discoverProviders
   //   ⇒ 这里**不再过滤成"同一款模型"**（那条老硬规则"只换 API、不换模型"已被用户的新口径取代：
   //   现在是"**先切模型，再切 API**"）。`pick` 只负责按 idx 往下走、跳过不可用的家。
   const chain = chainAll
-  const start = Math.max(0, Math.min(Number(state.failover?.roles?.[role]?.idx ?? 0) || 0, chain.length - 1))
+  let start = Math.max(0, Math.min(Number(state.failover?.roles?.[role]?.idx ?? 0) || 0, chain.length - 1))
+  // ★W12：**首选能用就必须回到 0** —— 否则"上次切过一次"会变成永久改道：
+  //   实测 coder-a 的 idx 卡在 1（ark），而首选 ocgo 明明健康，于是每次都从 ark 起跑、每次都死。
+  //   口径：兜底是"本轮换个家顶上"，不是"以后都用那家"。
+  if (start > 0) {
+    const first = chain[0]
+    const u0 = first?.own ? { usable: true } : providerUsable(first?.provider, state, struct, secrets, routing)
+    if (u0?.usable) start = 0
+  }
   const tried = []
   for (let i = start; i < chain.length; i++) {
     const hop = chain[i]

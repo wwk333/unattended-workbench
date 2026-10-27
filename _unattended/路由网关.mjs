@@ -13,7 +13,10 @@
  *   · 有哪几家 / 地址 / 要什么头 → **每次请求现读** `_coder路由表.json`（② 的口径，唯一源；mtime 缓存）
  *   · 钥匙 → `额度钥匙.mjs` 的**三层解析**（唯一源），**每请求现解**、不落盘、不缓存成文件
  *   · 用哪一家 → **派活侧**（我们的代码）决定，写在路径第一段；网关**不猜、不参与选型**
- *   · 模型清单 → **网关根本不看**（请求体原样透传）⇒ 它不解释模型，就不可能和 ② 分叉
+ *   · 模型串 → **只做一次声明式剥前缀**（★W11）：请求体 `model` 若以「路径里那个家 + /」开头，
+ *     网关把它剥掉再转发（`ocgo/deepseek-v4.1-flash` → `deepseek-v4.1-flash`）。
+ *     家的来源是**调用方自己选的路径**，网关不猜、不选、不维护任何模型清单 ⇒ **仍然只有 ② 一个真源**。
+ *     对不上前缀一律原样透传（老行为不变）。
  *   · 写盘 → **只写自己的日志**（`logs\路由网关.log`），**绝不写任何配置**
  *
  * ## 刻意不做（留给 v2，避免和现有账本变成"两份账"）
@@ -136,11 +139,39 @@ const server = createServer(async (req, res) => {
   const ac = new AbortController()
   req.on('aborted', () => { try { ac.abort() } catch {} })
   try {
+    // ★★W11（2026-10-27，方案 B）：**按「路径里的家」剥掉模型串的前缀**。
+    //   起因：只吃裸名的载体（Qwen Code）无法指定"走哪家"，而同一个模型名在多家都声明时
+    //   裸名就有歧义 ⇒ 它自己挑，挑到谁全凭运气（实测挑到额度耗尽的 ark，报"额度用完"）。
+    //   方案：全系统统一用 `家/模型` 这个**全局唯一**写法（面板、agents.json、角色配置本来就是这么写的），
+    //   载体照抄给网关，网关按**路径第一段已经声明的家**把前缀剥掉，上游永远收到真名。
+    //   ⚠️ 这不是"网关解释模型"：它不猜家、不选家、不维护模型清单 —— 家来自调用方自己选的路径，
+    //      剥的只是那个字面量前缀；对不上一律**原样透传**（老行为完全不变）。
+    //   为什么必须缓冲请求体：原来是流式直传（req 当 body），改名字段就得先读全 ——
+    //   对话请求体都很小，缓冲无影响；**响应仍然流式透传**（SSE 不受影响）。
+    let body = (req.method === 'GET' || req.method === 'HEAD') ? undefined : req
+    let stripped = null
+    if (body) {
+      const chunks = []
+      for await (const c of req) chunks.push(c)
+      const buf = Buffer.concat(chunks)
+      const isJson = /json/i.test(String(req.headers['content-type'] ?? ''))
+      if (isJson && buf.length) {
+        try {
+          const j = JSON.parse(buf.toString('utf8'))
+          if (typeof j?.model === 'string' && j.model.startsWith(home + '/')) {
+            stripped = { from: j.model, to: j.model.slice(home.length + 1) }
+            j.model = stripped.to
+            body = Buffer.from(JSON.stringify(j), 'utf8')
+          } else body = buf
+        } catch { body = buf }
+      } else body = buf
+    }
+
     const up = await fetch(upstream, {
       method: req.method,
       headers,
-      body: (req.method === 'GET' || req.method === 'HEAD') ? undefined : req,
-      duplex: 'half',
+      body,
+      ...(body && !Buffer.isBuffer(body) ? { duplex: 'half' } : {}),
       signal: ac.signal
     })
     const out = {}

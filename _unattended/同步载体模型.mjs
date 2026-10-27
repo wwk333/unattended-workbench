@@ -501,11 +501,13 @@ export function planQwen () {
     //   ⇒ 载体侧**不再需要**知道真实端点，也不必拿钥匙；同名跨家由**路径**区分 ⇒ 天然不冲突。
     //   网关没起来时载体**直接失败**（用户拍板 A：失败要响，不静默回落）。
     const viaRouter = (process.env.DSH_ROUTER_URL ?? 'http://127.0.0.1:19420').replace(/\/+$/, '') + '/' + h.canon
-    for (const m of h.models) want.set(h.canon + '|' + m, { id: m, name: m + '（' + h.canon + '）', baseUrl: viaRouter, envKey: keyEnv, headers, canon: h.canon })
+    // ★★W11（方案 B）：条目 id 用**全局唯一**的 `家/模型` —— 载体照抄给网关，
+    //   网关按路径剥前缀后上游收到的仍是真名。这样"同名跨家"不再靠运气，也不必再有"独占勾选"。
+    for (const m of h.models) want.set(h.canon + '|' + m, { id: h.canon + '/' + m, upstream: m, name: m + '（' + h.canon + '）', baseUrl: viaRouter, envKey: keyEnv, headers, canon: h.canon })
   }
   for (const [, w] of want) {
     const g = groups[w.canon] ?? (groups[w.canon] = [])
-    if (g.some((x) => String(x?.id ?? '') === w.id)) continue
+    if (g.some((x) => String(x?.id ?? '') === w.id)) continue   // 幂等：同一个 `家/模型` 只留一条
     g.push({
       id: w.id, name: w.name, baseUrl: w.baseUrl, ...(w.envKey ? { envKey: w.envKey } : {}),
       // 这家要求的额外请求头写进 `generationConfig.customHeaders`；值用官方的 `${session_id}` 占位符

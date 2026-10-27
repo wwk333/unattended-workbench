@@ -52,9 +52,7 @@
           "low": "low",
           "high": "high",
           "max": "max"
-        },
-        "keep": false,
-        "keep注": "取消勾选：deepseek-v4.1-flash 由 ocgo 独占"
+        }
       },
       {
         "id": "deepseek-v4-pro",
@@ -813,9 +811,7 @@
           "low": "low",
           "high": "high",
           "max": "max"
-        },
-        "keep": false,
-        "keep注": "取消勾选：deepseek-v4.1-flash 由 ocgo 独占"
+        }
       },
       {
         "id": "deepseek-v4-pro",
@@ -1812,9 +1808,7 @@
           "low",
           "high",
           "max"
-        ],
-        "keep": false,
-        "keep注": "取消勾选：deepseek-v4.1-flash 由 ocgo 独占"
+        ]
       }
     ]
   }
